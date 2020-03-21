@@ -1,2 +1,3 @@
 # bb-scripts
-Development incubator for Babashka scripts
+
+Development incubator for Babashka scripts.
