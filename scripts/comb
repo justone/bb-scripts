@@ -2,4 +2,5 @@
 
 cd $(dirname $0)/..
 
-bb -cp $(deps.clj -Spath) -I --stream "(require '[comb :as n]) (apply n/-main *command-line-args*)" "$@"
+bb -cp $(deps.clj -Spath) -I --stream \
+    "(require '[comb :as c]) (apply n/-main *command-line-args*)" "$@"
