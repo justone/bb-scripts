@@ -2,3 +2,4 @@
 .cpcache/
 .rebel_readline_history
 .socket-port
+.nrepl-port
