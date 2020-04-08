@@ -2,5 +2,4 @@
 
 cd $(dirname $0)/..
 
-bb -cp $(deps.clj -Spath) \
-    "(require '[ftime :as n]) (apply n/-main *command-line-args*)" "$@"
+bb -cp $(deps.clj -Spath) -m ftime -- "$@"
