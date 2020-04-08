@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+cd $(dirname $0)/..
+
+bb -cp $(deps.clj -Spath) -m penv -- "$@"
