@@ -2,5 +2,4 @@
 
 cd $(dirname $0)/..
 
-bb -cp $(deps.clj -Spath) \
-    "(require '[uberscriptify :as u]) (apply u/-main *command-line-args*)" "$@"
+bb -cp $(deps.clj -Spath) -m uberscriptify -- "$@"

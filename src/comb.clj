@@ -15,7 +15,7 @@
    ["-h" "--help"]])
 
 (defn process
-  [data options]
+  [options data]
   (let [{:keys [template]} options]
     (binding [*out* *err*]
       (println "data:" (pr-str data)))
@@ -27,5 +27,5 @@
     (or (some->> (opts/find-errors parsed)
                  (opts/print-errors progname parsed)
                  (System/exit))
-        (-> (process user/*input* options)
-            (println)))))
+        (->> (map (partial process options) user/*input*)
+             (run! println)))))
