@@ -3,6 +3,8 @@
 Development incubator for Babashka scripts. This is where I develop scripts in
 Clojure and then run them with Babashka.
 
+I gave a presentation about writing scripts in Babashka. Slides are [here](https://github.com/justone/bb-present).
+
 # Using the scripts
 
 If you only want to use one of the scripts, just download it out of the
