@@ -1,8 +1,8 @@
 {:aliases {:repl {:extra-deps {cljdev {:git/url "https://github.com/justone/cljdev.git"
-                                       :sha "0606399da2612346290c667faa1d1ac4a096e58d"}
-                               ;; Additional libs for clojure to match babashka includes
-                               org.clojure/tools.cli {:mvn/version "1.0.194"}}
-                  :extra-paths ["dev"]
-                  :main-opts  ["-m" "cljdev.repl"]}}
+                                       :sha "0606399da2612346290c667faa1d1ac4a096e58d"}}
+                  :main-opts  ["-m" "cljdev.repl"]}
+           :clj {:extra-deps {;; Additional libs for clojure to match babashka includes
+                              org.clojure/tools.cli {:mvn/version "1.0.194"}}
+                 :extra-paths ["dev"]}}
  :paths ["src"]
  :deps {comb {:mvn/version "0.1.1"}}}
