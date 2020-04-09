@@ -15,7 +15,7 @@ Current scripts:
 * [penv](uberscripts/penv) - Prints out the environment like `env` does, but it masks variables that it thinks are private (like `SLACK_TOKEN`).
 * [comb](uberscripts/comb) - Template data using [comb](https://github.com/weavejester/comb).
 
-# Development
+# Development Workflow
 
 ## Set up
 
@@ -23,7 +23,46 @@ Before you begin development, you should have the following installed on your PA
 
 * [Babashka](https://github.com/borkdude/babashka/) as `bb`
 * [deps.clj](https://github.com/borkdude/deps.clj) as `deps.clj`
+* [Clojure](https://clojure.org/guides/getting_started) as `clojure`
 
 ## Creating a script
 
-WIP
+To create a script, you need to create two files. For instance, to create a new script called `foo`, create the following files:
+
+`script/foo` - a Babashka dev runner
+```
+#!/usr/bin/env bash
+
+cd $(dirname $0)/..
+
+bb -cp $(clojure -Spath) -m foo -- "$@"
+```
+
+`src/foo.clj` - the Clojure source for the script
+```
+(ns foo)
+
+(defn -main [& args]
+  (println "foo"))
+```
+
+
+## Development
+
+Start a repl with `clojure -A:clj:repl`. This will expose nREPL and pREPL ports
+for editor integration. This allows for full iterative REPL-driven development.
+
+To test running the script as a whole, use either of the following:
+
+* `./script/foo [args]` - to test running in Babashka
+* `clojure -A:clj -m foo [args]` - to test running in Clojure
+
+## Uberscripting
+
+Babashka can combine all namespaces used by a script into one file called an uberscript. There is a script in `./scripts/uberscriptify` that will combine this with the proper header. To create an uberscript, just run:
+
+```
+./scripts/uberscriptify -s foo
+```
+
+And the resulting file will be in `uberscripts/foo`.
