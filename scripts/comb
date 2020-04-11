@@ -2,4 +2,4 @@
 
 cd $(dirname $0)/..
 
-bb -cp $(deps.clj -Spath) -I -m comb -- "$@"
+bb -cp $(clojure -Spath) -I -m comb -- "$@"

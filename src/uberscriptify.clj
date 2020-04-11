@@ -34,10 +34,16 @@
             {:message "pass in millis as the first argument"
              :exit 1}))))
 
+(defn get-classpath
+  []
+  (let [result (sh/sh "clojure" "-Spath")]
+    (:out result)))
+
 (defn create-uberscript
   [main-ns]
   (let [tmp (str ".tmp." main-ns)
-        cmd ["deps.clj" "-Scommand" (str "bb -cp {{classpath}} -m " main-ns " --uberscript " tmp)]
+        cp (get-classpath)
+        cmd ["bb" "-cp" cp "-m" main-ns "--uberscript" tmp]
         _result (apply sh/sh cmd)
         script (slurp tmp)]
     (.delete (io/file tmp))

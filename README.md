@@ -24,7 +24,6 @@ Current scripts:
 Before you begin development, you should have the following installed on your PATH:
 
 * [Babashka](https://github.com/borkdude/babashka/) as `bb`
-* [deps.clj](https://github.com/borkdude/deps.clj) as `deps.clj`
 * [Clojure](https://clojure.org/guides/getting_started) as `clojure`
 
 ## Creating a script

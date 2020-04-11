@@ -2,4 +2,4 @@
 
 cd $(dirname $0)/..
 
-bb -cp $(deps.clj -Spath) -m penv -- "$@"
+bb -cp $(clojure -Spath) -m penv -- "$@"
