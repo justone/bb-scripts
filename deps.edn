@@ -5,4 +5,5 @@
                               org.clojure/tools.cli {:mvn/version "1.0.194"}}
                  :extra-paths ["dev"]}}
  :paths ["src"]
- :deps {comb {:mvn/version "0.1.1"}}}
+ :deps {comb {:mvn/version "0.1.1"}
+        doric {:mvn/version "0.9.0"}}}
