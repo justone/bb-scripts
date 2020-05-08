@@ -2,6 +2,7 @@
                                        :sha "8f34defc800f4c5b0d1124c3ebd79c457ce2b943"}}
                   :main-opts  ["-m" "cljdev.repl"]}
            :clj {:extra-deps {;; Additional libs for clojure to match babashka includes
+                              cheshire {:mvn/version "5.10.0"}
                               org.clojure/tools.cli {:mvn/version "1.0.194"}}
                  :extra-paths ["dev"]}}
  :paths ["src"]
