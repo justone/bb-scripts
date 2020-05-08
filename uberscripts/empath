@@ -362,6 +362,9 @@
       (let [{:keys [arguments]} parsed
             subcommand (-> arguments first keyword)]
         (cond
+          (nil? subcommand)
+          {:exit 1}
+
           (not (contains? subcommands subcommand))
           {:message (str "Invalid subcommand: " (name subcommand))
            :exit 1}))))
