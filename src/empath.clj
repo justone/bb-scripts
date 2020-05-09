@@ -77,7 +77,8 @@
 ;; Edit subcommand
 
 (def edit-options
-  [["-h" "--help" "Show help"]])
+  [["-h" "--help" "Show help"]
+   ["-e" "--empty" "Start with empty path"]])
 
 (def edit-help
   (lib.string/dedent
@@ -105,11 +106,15 @@
 
 (defn handle-edit
   [global-options subargs]
-  (let [parsed (parse-opts subargs edit-options :in-order true)]
+  (let [parsed (parse-opts subargs edit-options :in-order true)
+        {:keys [options arguments]} parsed]
     (or (when-some [errors (opts/find-errors parsed)]
           (->> (opts/format-help (str progname " edit") edit-help parsed errors)
                (opts/print-and-exit)))
-        (println (munge-path (get-path global-options) subargs)))))
+        (let [path (if (:empty options)
+                     ":"
+                     (get-path global-options))]
+          (println (munge-path path arguments))))))
 
 
 ;; Main
