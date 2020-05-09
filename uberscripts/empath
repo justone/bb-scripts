@@ -299,28 +299,28 @@
 
 (defn handle-print
   [global-options subargs]
-  (let [path (get-path global-options)
-        parsed (parse-opts subargs print-options)
-        {:keys [options]} parsed
-        analyzed (analyze path)]
+  (let [parsed (parse-opts subargs print-options)
+        {:keys [options]} parsed]
     (or (when-some [errors (opts/find-errors parsed)]
           (->> (opts/format-help (str progname " print") print-help parsed errors)
                (opts/print-and-exit)))
-        (cond
-          (:plain options)
-          (run! #(println (:element %)) analyzed)
+        (let [path (get-path global-options)
+              analyzed (analyze path)]
+          (cond
+            (:plain options)
+            (run! #(println (:element %)) analyzed)
 
-          (:json options)
-          (run! #(println (json/generate-string %)) analyzed)
+            (:json options)
+            (run! #(println (json/generate-string %)) analyzed)
 
-          (:edn options)
-          (run! prn analyzed)
+            (:edn options)
+            (run! prn analyzed)
 
-          (or (empty? options) (:table options))
-          (->> analyzed
-               (doric/table [:element :exists :dir :file :can-write])
-               println)
-          ))))
+            (or (empty? options) (:table options))
+            (->> analyzed
+                 (doric/table [:element :exists :dir :file :can-write])
+                 println)
+            )))))
 
 
 ;; Edit subcommand
@@ -354,12 +354,11 @@
 
 (defn handle-edit
   [global-options subargs]
-  (let [path (get-path global-options)
-        parsed (parse-opts subargs edit-options :in-order true)]
+  (let [parsed (parse-opts subargs edit-options :in-order true)]
     (or (when-some [errors (opts/find-errors parsed)]
           (->> (opts/format-help (str progname " edit") edit-help parsed errors)
                (opts/print-and-exit)))
-        (println (munge-path path subargs)))))
+        (println (munge-path (get-path global-options) subargs)))))
 
 
 ;; Main
