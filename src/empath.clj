@@ -131,8 +131,8 @@
     Manipulate and inspect path-like data with ease. Path data is a
     string delimited by colons.
 
-    By default, the $PATH environment variable is used. To specify
-    different data, use the -p global option or pass it in via stdin.
+    To specify which path to use, pass it via stdin or use the -p global
+    option.
 
     Available subcommands:
 
