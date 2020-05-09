@@ -30,8 +30,7 @@
 (defn get-path
   [options]
   (or (:path options)
-      (when (.ready *in*) (string/trim (slurp *in*)))
-      (System/getenv "PATH")))
+      (string/trim (slurp *in*))))
 
 
 ;; Print subcommand
