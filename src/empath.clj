@@ -73,6 +73,45 @@
           ))))
 
 
+;; Edit subcommand
+
+(def edit-options
+  [["-h" "--help" "Show help"]])
+
+(def edit-help
+  (lib.string/dedent
+    "    "
+    "Edit elements of a path.
+
+    Takes a list of actions. Valid actions are:
+
+      append [element]
+      remove [element]
+      prepend [element]"))
+
+(defn munge-path
+  [path args]
+  (let [parts (into [] (string/split path #":"))]
+    (string/join
+      ":"
+      (reduce
+        (fn [result [op arg]]
+          (case op
+            "prepend" (into [arg] result)
+            "append" (conj result arg)
+            "remove" (into [] (remove #(= arg %) result))))
+        parts (partition 2 args)))))
+
+(defn handle-edit
+  [global-options subargs]
+  (let [path (get-path global-options)
+        parsed (parse-opts subargs edit-options :in-order true)]
+    (or (when-some [errors (opts/find-errors parsed)]
+          (->> (opts/format-help (str progname " edit") edit-help parsed errors)
+               (opts/print-and-exit)))
+        (println (munge-path path subargs)))))
+
+
 ;; Main
 
 (def cli-options
@@ -92,7 +131,8 @@
 
     Available subcommands:
 
-      print - print a path in a variety of wats
+      print - print a path in a variety of ways
+      edit - edit a path by adding and removing elements
 
     Pass '-h' to see further help on each subcommand."))
 
@@ -101,9 +141,10 @@
   (let [[subcommand & subargs] arguments]
     (case subcommand
       "print" (handle-print options subargs)
+      "edit" (handle-edit options subargs)
       )))
 
-(def subcommands #{:print})
+(def subcommands #{:print :edit})
 
 (defn find-errors
   [parsed]
