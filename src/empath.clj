@@ -56,21 +56,22 @@
                (opts/print-and-exit)))
         (let [path (get-path global-options)
               analyzed (analyze path)]
-          (cond
-            (:plain options)
-            (run! #(println (:element %)) analyzed)
+          (when (seq analyzed)
+            (cond
+              (:plain options)
+              (run! #(println (:element %)) analyzed)
 
-            (:json options)
-            (run! #(println (json/generate-string %)) analyzed)
+              (:json options)
+              (run! #(println (json/generate-string %)) analyzed)
 
-            (:edn options)
-            (run! prn analyzed)
+              (:edn options)
+              (run! prn analyzed)
 
-            (or (empty? options) (:table options))
-            (->> analyzed
-                 (doric/table [:element :exists :dir :file :can-write])
-                 println)
-            )))))
+              (or (empty? options) (:table options))
+              (->> analyzed
+                   (doric/table [:element :exists :dir :file :can-write])
+                   println)
+              ))))))
 
 
 ;; Edit subcommand
