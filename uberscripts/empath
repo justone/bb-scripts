@@ -297,6 +297,25 @@
     "    "
     "Print the elements of a path in various ways."))
 
+(defn prepare-output
+  [options analyzed]
+  (when (seq analyzed)
+    (cond
+      (:plain options)
+      (->> (map :element analyzed)
+           (string/join "\n"))
+
+      (:json options)
+      (->> (map #(json/generate-string %) analyzed)
+           (string/join "\n"))
+
+      (:edn options)
+      (->> (map pr-str analyzed)
+           (string/join "\n"))
+
+      (or (empty? options) (:table options))
+      (doric/table [:element :exists :dir :file :can-write] analyzed))))
+
 (defn handle-print
   [global-options subargs]
   (let [parsed (parse-opts subargs print-options)
@@ -304,24 +323,10 @@
     (or (when-some [errors (opts/find-errors parsed)]
           (->> (opts/format-help (str progname " print") print-help parsed errors)
                (opts/print-and-exit)))
-        (let [path (get-path global-options)
-              analyzed (analyze path)]
-          (when (seq analyzed)
-            (cond
-              (:plain options)
-              (run! #(println (:element %)) analyzed)
-
-              (:json options)
-              (run! #(println (json/generate-string %)) analyzed)
-
-              (:edn options)
-              (run! prn analyzed)
-
-              (or (empty? options) (:table options))
-              (->> analyzed
-                   (doric/table [:element :exists :dir :file :can-write])
-                   println)
-              ))))))
+        (->> (get-path global-options)
+             (analyze)
+             (prepare-output options)
+             (println)))))
 
 
 ;; Edit subcommand
