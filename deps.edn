@@ -4,7 +4,8 @@
            :clj {:extra-deps {;; Additional libs for clojure to match babashka includes
                               cheshire {:mvn/version "5.10.0"}
                               org.clojure/tools.cli {:mvn/version "1.0.194"}}
-                 :extra-paths ["dev"]}}
+                 :extra-paths ["dev"]}
+           :test {:extra-paths ["test"]}}
  :paths ["src"]
  :deps {comb {:mvn/version "0.1.1"}
         doric {:mvn/version "0.9.0"}}}
