@@ -89,7 +89,7 @@
 
       append [element] - append element to end of path
       remove [element] - remove element from path
-      prepend [element] - prepsent element to beginning of path
+      prepend [element] - prepend element to beginning of path
       xappend [element] - append element after removing from rest of path
       xprepend [element] - prepend element after removing from rest of path
     "))
