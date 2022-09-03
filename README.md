@@ -13,6 +13,7 @@ If you only want to use one of the scripts, just download it out of the
 
 Current scripts:
 
+* [empath](uberscripts/empath) - Print out and edit `$PATH`-like things.
 * [ftime](uberscripts/ftime) - Print out a human-readable time based on passing in millis.
 * [penv](uberscripts/penv) - Prints out the environment like `env` does, but it masks variables that it thinks are private (like `SLACK_TOKEN`).
 * [comb](uberscripts/comb) - Template data using [comb](https://github.com/weavejester/comb).
