@@ -12,6 +12,10 @@
   ([zone]
    (ZoneId/of zone)))
 
+(defn now-millis
+  []
+  (.toEpochMilli (Instant/now)))
+
 (defn millis->datetime
   [millis zone]
   (let [inst (Instant/ofEpochMilli millis)]

@@ -16,6 +16,10 @@
   ([zone]
    (ZoneId/of zone)))
 
+(defn now-millis
+  []
+  (.toEpochMilli (Instant/now)))
+
 (defn millis->datetime
   [millis zone]
   (let [inst (Instant/ofEpochMilli millis)]
@@ -87,15 +91,6 @@
     :default "America/Los_Angeles"]
    ["-h" "--help"]])
 
-(defn find-errors
-  [parsed]
-  (or (opts/find-errors parsed)
-      (let [{:keys [arguments]} parsed]
-        (cond
-          (zero? (count arguments))
-          {:message "pass in millis as the first argument"
-           :exit 1}))))
-
 (defn process
   [millis options]
   (let [{:keys [format timezone]} options]
@@ -105,9 +100,10 @@
 (defn -main [& args]
   (let [parsed (parse-opts args cli-options)
         {:keys [options arguments]} parsed]
-    (or (some->> (find-errors parsed)
+    (or (some->> (opts/find-errors parsed)
                  (opts/print-errors progname parsed)
                  (System/exit))
-        (-> (process (-> arguments first Long.) options)
+        (-> (process (or (some-> arguments first Long.)
+                         (time/now-millis)) options)
             (println)))))
 (ns user (:require [ftime])) (apply ftime/-main *command-line-args*)
