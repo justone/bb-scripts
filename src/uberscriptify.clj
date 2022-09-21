@@ -43,7 +43,7 @@
   [main-ns]
   (let [tmp (str ".tmp." main-ns)
         cp (get-classpath)
-        cmd ["bb" "-cp" cp "-m" main-ns "--uberscript" tmp]
+        cmd ["bb" "uberscript" tmp "-cp" cp "-m" main-ns]
         _result (apply sh/sh cmd)
         script (slurp tmp)]
     (.delete (io/file tmp))
