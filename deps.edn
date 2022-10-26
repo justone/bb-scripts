@@ -1,14 +1,13 @@
-{:aliases {:repl {:extra-deps {cljdev {:git/url "https://github.com/justone/cljdev.git"
-                                       :sha "8f34defc800f4c5b0d1124c3ebd79c457ce2b943"}}
-                  :main-opts  ["-m" "cljdev.repl"]}
+{:aliases {:repl {:extra-deps {io.github.justone/cljdev {:sha "b1956efcbafb5e1b5e0fc9bfb5715c25e9efae5e"}}
+                  :exec-fn cljdev.repl/start}
            :clj {:extra-deps {;; Additional libs for clojure to match babashka includes
-                              cheshire {:mvn/version "5.10.0"}
-                              org.clojure/tools.cli {:mvn/version "1.0.194"}}
+                              cheshire/cheshire {:mvn/version "5.10.0"}
+                              org.clojure/tools.cli {:mvn/version "1.0.206"}}
                  :extra-paths ["dev"]}
            :test {:extra-paths ["test"]
                   :extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
                                                           :sha "209b64504cb3bd3b99ecfec7937b358a879f55c1"}}
                   :main-opts ["-m" "cognitect.test-runner"]}}
  :paths ["src"]
- :deps {comb {:mvn/version "0.1.1"}
-        doric {:mvn/version "0.9.0"}}}
+ :deps {comb/comb {:mvn/version "0.1.1"}
+        doric/doric {:mvn/version "0.9.0"}}}

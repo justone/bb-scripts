@@ -51,13 +51,13 @@ bb -cp $(clojure -Spath) -m foo -- "$@"
 
 ## Development
 
-Start a repl with `clojure -A:clj:repl`. This will expose nREPL and pREPL ports
+Start a repl with `clojure -X:clj:repl`. This will expose nREPL and pREPL ports
 for editor integration. This allows for full iterative REPL-driven development.
 
 To test running the script as a whole, use either of the following:
 
 * `./script/foo [args]` - to test running in Babashka
-* `clojure -A:clj -m foo [args]` - to test running in Clojure
+* `clojure -M:clj -m foo [args]` - to test running in Clojure
 
 ## Uberscripting
 
