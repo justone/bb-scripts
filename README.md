@@ -3,20 +3,39 @@
 Development incubator for Babashka scripts. This is where I develop scripts in
 Clojure and then run them with Babashka.
 
-I gave a presentation about writing scripts in Babashka. Slides are [here](https://github.com/justone/bb-present).
+I gave [a presentation](https://www.youtube.com/watch?v=RogyxI-GaGQ) about
+writing scripts in Babashka. Slides are [here](https://github.com/justone/bb-present).
 
-# Using the scripts
-
-If you only want to use one of the scripts, just download it out of the
-[uberscripts](uberscripts/) directory and put it in a directory on your
-`$PATH`.
-
-Current scripts:
+# Current scripts
 
 * [empath](uberscripts/empath) - Print out and edit `$PATH`-like things.
 * [ftime](uberscripts/ftime) - Print out a human-readable time based on passing in millis.
 * [penv](uberscripts/penv) - Prints out the environment like `env` does, but it masks variables that it thinks are private (like `SLACK_TOKEN`).
 * [comb](uberscripts/comb) - Template data using [comb](https://github.com/weavejester/comb).
+
+
+# Using the scripts
+
+## Manual
+
+If you only want to use one of the scripts, just download it out of the
+[uberscripts](uberscripts/) directory and put it in a directory on your
+`$PATH`.
+
+## Install with bbin
+
+[bbin](https://github.com/babashka/bbin) is a great way to install Babashka
+scripts with one command.
+
+It doesn't [yet](https://github.com/babashka/bbin/issues/18) support picking
+which script you want when a repo (like this one) supports multiple, so use the
+following syntax (provide `--main-opts` and `--as`):
+
+```
+bbin install io.github.justone/bb-scripts --main-opts '["-m" "empath"] --as empath
+```
+
+Refer to the bbin docs for more options.
 
 # Development Workflow
 
