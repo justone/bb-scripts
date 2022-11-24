@@ -9,5 +9,6 @@
                                                           :sha "209b64504cb3bd3b99ecfec7937b358a879f55c1"}}
                   :main-opts ["-m" "cognitect.test-runner"]}}
  :paths ["src"]
+ ;; Keep these in sync with bb.edn
  :deps {comb/comb {:mvn/version "0.1.1"}
         doric/doric {:mvn/version "0.9.0"}}}
