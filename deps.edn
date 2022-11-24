@@ -2,6 +2,7 @@
                   :exec-fn cljdev.repl/start}
            :clj {:extra-deps {;; Additional libs for clojure to match babashka includes
                               cheshire/cheshire {:mvn/version "5.10.0"}
+                              http-kit/http-kit {:mvn/version "2.6.0"}
                               org.clojure/tools.cli {:mvn/version "1.0.206"}}
                  :extra-paths ["dev"]}
            :test {:extra-paths ["test"]
