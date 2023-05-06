@@ -1,5 +1,6 @@
 (ns rater
-  (:require [clojure.tools.cli :refer [parse-opts]]
+  (:require [clojure.string :as string]
+            [clojure.tools.cli :refer [parse-opts]]
             [lib.opts2 :as opts]
             [lib.string]
             [user])
@@ -36,10 +37,15 @@
 (def initial-state
   {:last nil})
 
+(comment
+  (string/replace "20,298,103" "," ""))
+
 (defn advance
   [state input now]
   (try
-    (let [new-value (Float/parseFloat input)
+    (let [new-value (-> input
+                        (string/replace "," "")
+                        Float/parseFloat)
           {:keys [value ts]} (:last state)
           millis (when ts (.until ts now ChronoUnit/MILLIS))
           value-change (when value (- value new-value))
@@ -53,7 +59,7 @@
                         (when remaining-ms (format "\nremaining time: %02f s" (/ remaining-ms 1000.0)))
                         (when finish-time (format "\nestimated finish: %s" (.atZone finish-time (ZoneId/systemDefault)))))
        :last {:value new-value :ts now}})
-    (catch NumberFormatException
+    (catch NumberFormatException _e
       {})))
 
 (defn -main [& args]
