@@ -35,7 +35,7 @@
   (str "input: " input))
 
 (def initial-state
-  {:last nil})
+  {:prev nil})
 
 (comment
   (string/replace "20,298,103" "," ""))
@@ -46,19 +46,24 @@
     (let [new-value (-> input
                         (string/replace "," "")
                         Float/parseFloat)
-          {:keys [value ts]} (:last state)
-          millis (when ts (.until ts now ChronoUnit/MILLIS))
-          value-change (when value (- value new-value))
-          rate-ms (when millis (/ value-change millis))
+          {:keys [value ts] :as prev} (first (:prev state))
+          millis (when prev (.until ts now ChronoUnit/MILLIS))
+          value-change (when prev (- value new-value))
+          rate-ms (when prev (/ value-change millis))
           remaining-ms (when rate-ms (/ new-value rate-ms))
-          finish-time (when remaining-ms (.plus now (long remaining-ms) ChronoUnit/MILLIS))]
+          finish-time (when remaining-ms (.plus now (long remaining-ms) ChronoUnit/MILLIS))
+          formatted-rate (when rate-ms (format "\nrate: %02f/s" (* rate-ms 1000.0)))
+          formatted-remaining (when remaining-ms (format "\nremaining time: %02f s" (/ remaining-ms 1000.0)))
+          formatted-finish (when finish-time (format "\nestimated finish: %s" (.atZone finish-time (ZoneId/systemDefault))))
+          formatted-now (.atZone now (ZoneId/systemDefault))]
       ; (when rate
       ;   (prn :debug millis value-change (/ value-change millis) rate))
-      {:report-txt (str "input: " new-value " at " (.atZone now (ZoneId/systemDefault))
-                        (when rate-ms (format "\nrate: %02f/s" (* rate-ms 1000.0)))
-                        (when remaining-ms (format "\nremaining time: %02f s" (/ remaining-ms 1000.0)))
-                        (when finish-time (format "\nestimated finish: %s" (.atZone finish-time (ZoneId/systemDefault)))))
-       :last {:value new-value :ts now}})
+      {:prev [{:value new-value :ts now}]
+       :report/finish formatted-finish
+       :report/now formatted-now
+       :report/rate formatted-rate
+       :report/remaining formatted-remaining
+       :report/txt (str "input: " new-value " at " formatted-now formatted-rate formatted-remaining formatted-finish)})
     (catch NumberFormatException _e
       {})))
 
@@ -74,5 +79,5 @@
                  state initial-state]
             (when-let [next-line (first inputs)]
               (let [next-state (advance state next-line (Instant/now))]
-                (some-> next-state :report-txt println)
+                (some-> next-state :report/txt println)
                 (recur (next inputs) next-state))))))))
