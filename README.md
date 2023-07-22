@@ -81,10 +81,10 @@ To test running the script as a whole, use either of the following:
 
 ## Uberscripting
 
-Babashka can combine all namespaces used by a script into one file called an uberscript. There is a script in `./scripts/uberscriptify` that will combine this with the proper header. To create an uberscript, just run:
+Babashka can combine all namespaces used by a script into one file called an uberscript. There is a script in `./scripts/uberscriptify` that will combine this with the proper header. To create an uberscript from the `foo` script, just run:
 
 ```
-./scripts/uberscriptify -s foo
+./scripts/uberscriptify --script foo
 ```
 
 And the resulting file will be in `uberscripts/foo`.
