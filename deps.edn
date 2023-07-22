@@ -2,11 +2,16 @@
                   :exec-fn cljdev.repl/start}
            :clj {:extra-deps {;; Additional libs for clojure to match babashka includes
                               cheshire/cheshire {:mvn/version "5.10.0"}
-                              org.clojure/tools.cli {:mvn/version "1.0.206"}}
+                              org.clojure/tools.cli {:mvn/version "1.0.206"}
+                              babashka/process {:mvn/version "0.4.16"}
+                              babashka/fs {:mvn/version "0.2.15"}}
                  :extra-paths ["dev"]}
            :test {:extra-paths ["test"]
                   :extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
-                                                          :sha "209b64504cb3bd3b99ecfec7937b358a879f55c1"}}
+                                                          :sha "209b64504cb3bd3b99ecfec7937b358a879f55c1"}
+                               ;; Additional testing libs for clojure to match babashka's superpowers
+                               babashka/process {:mvn/version "0.4.16"}
+                               babashka/fs {:mvn/version "0.2.15"}}
                   :main-opts ["-m" "cognitect.test-runner"]}}
  :paths ["src"]
  ;; Keep these in sync with bb.edn

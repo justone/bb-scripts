@@ -29,11 +29,16 @@
     %s"))
 
 (defn format-help
-  [progname help parsed errors]
-  (let [{:keys [summary]} parsed
-        {:keys [message exit]} errors]
-    {:help (format help-fmt progname (or message help) summary)
-     :exit exit}))
+  ([prog-ns parsed errors]
+   (format-help (str prog-ns)
+                (-> (meta prog-ns) :doc lib.string/dedent)
+                parsed
+                errors))
+  ([progname help parsed errors]
+   (let [{:keys [summary]} parsed
+         {:keys [message exit]} errors]
+     {:help (format help-fmt progname (or message help) summary)
+      :exit exit})))
 
 (defn print-and-exit
   [{:keys [help exit]}]

@@ -8,6 +8,7 @@ writing scripts in Babashka. Slides are [here](https://github.com/justone/bb-pre
 
 # Current scripts
 
+* [highlight](uberscripts/highlight) - Highlight regex matches in piped text.
 * [empath](uberscripts/empath) - Print out and edit `$PATH`-like things.
 * [ftime](uberscripts/ftime) - Print out a human-readable time based on passing in millis.
 * [penv](uberscripts/penv) - Prints out the environment like `env` does, but it masks variables that it thinks are private (like `SLACK_TOKEN`).
