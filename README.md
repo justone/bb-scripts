@@ -33,7 +33,7 @@ which script you want when a repo (like this one) supports multiple, so use the
 following syntax (provide `--main-opts` and `--as`):
 
 ```
-bbin install io.github.justone/bb-scripts --main-opts '["-m" "empath"] --as empath
+bbin install io.github.justone/bb-scripts --main-opts '["-m" "empath"]' --as empath
 ```
 
 Refer to the bbin docs for more options.
