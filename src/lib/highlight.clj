@@ -53,8 +53,16 @@
 (defn- wrap
   [match opts]
   (let [{:keys [reverse? offset colors explicit]} opts
+        ; _ (println match)
         string (cond-> match
+                 (and (vector? match)
+                      (some? (second match))) second
+                 (and (vector? match)
+                      (nil? (second match))) first)
+        ; _ (println string)
+        match (cond-> match
                  (vector? match) first)
+        ; _ (println match)
         color (or (get explicit string)
                   (nth colors
                        (mod (cond-> string
@@ -62,7 +70,8 @@
                               :always djb2
                               offset (+ offset))
                             (count colors))))]
-    (fg string color)))
+    ; (println match string)
+    (string/replace match string (fg string color))))
 
 (def default-opts
   {:colors colors-for-dark

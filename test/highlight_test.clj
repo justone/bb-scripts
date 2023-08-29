@@ -86,6 +86,14 @@
     (is (= "[38;5;160mfoo[0m bar [38;5;49mbaz[0m"
            (apply highlight/add "foo bar baz" (args->color-opts "--light foo|baz")))))
 
+  (testing "groups"
+    (is (= "[38;5;96mfoo[0m bar baz"
+           (apply highlight/add "foo bar baz" (args->color-opts "foo"))))
+    (is (= "[38;5;96mfoo[0m bar [38;5;190mbaz[0m"
+           (apply highlight/add "foo bar baz" (args->color-opts "foo|baz"))))
+    (is (= "[38;5;160mfoo[0m bar [38;5;49mbaz[0m"
+           (apply highlight/add "foo bar baz" (args->color-opts "--light foo|baz")))))
+
   (testing "offset makes colors different"
     (is (= "[38;5;106mfoo[0m bar baz"
            (apply highlight/add "foo bar baz" (args->color-opts "-o 10 foo"))))
@@ -100,6 +108,6 @@
 
   (testing "explicit color specifying"
     (is (= "[38;5;196mfoo1[0m [38;5;220mbar2[0m [38;5;105mbaz3[0m"
-           (apply highlight/add "foo1 bar2 baz3" (args->color-opts "(foo|bar|baz)\\d -e 5,0,0:foo1 -e 5,4,0:bar2 -e 2,2,5:baz3"))))
+           (apply highlight/add "foo1 bar2 baz3" (args->color-opts "(?:foo|bar|baz)\\d -e 5,0,0:foo1 -e 5,4,0:bar2 -e 2,2,5:baz3"))))
     (is (= "[38;5;226mfoo1[0m [38;5;128mbar2[0m [38;5;57mbaz3[0m"
-           (apply highlight/add "foo1 bar2 baz3" (args->color-opts "(foo|bar|baz)\\d -e 226:foo1 -e 128:bar2 -e 57:baz3"))))))
+           (apply highlight/add "foo1 bar2 baz3" (args->color-opts "(?:foo|bar|baz)\\d -e 226:foo1 -e 128:bar2 -e 57:baz3"))))))
