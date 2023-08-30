@@ -89,8 +89,8 @@
   (testing "groups"
     (is (= "[38;5;78mfo[0mo fo bofo"
            (apply highlight/add "foo fo bofo" (args->color-opts "(fo)o"))))
-    (is (= "GET /user/[38;5;114m1234[0m"
-           (apply highlight/add "GET /user/1234" (args->color-opts "/user/(\\d+)")))))
+    (is (= "GET 200 /user/[38;5;114m1234[0m"
+           (apply highlight/add "GET 200 /user/1234" (args->color-opts "/user/(\\d+)")))))
 
   (testing "offset makes colors different"
     (is (= "[38;5;106mfoo[0m bar baz"
