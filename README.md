@@ -8,6 +8,7 @@ writing scripts in Babashka. Slides are [here](https://github.com/justone/bb-pre
 
 # Current scripts
 
+* [highlight](uberscripts/highlight) - Highlight regex matches in piped text.
 * [empath](uberscripts/empath) - Print out and edit `$PATH`-like things.
 * [ftime](uberscripts/ftime) - Print out a human-readable time based on passing in millis.
 * [penv](uberscripts/penv) - Prints out the environment like `env` does, but it masks variables that it thinks are private (like `SLACK_TOKEN`).
@@ -32,7 +33,7 @@ which script you want when a repo (like this one) supports multiple, so use the
 following syntax (provide `--main-opts` and `--as`):
 
 ```
-bbin install io.github.justone/bb-scripts --main-opts '["-m" "empath"] --as empath
+bbin install io.github.justone/bb-scripts --main-opts '["-m" "empath"]' --as empath
 ```
 
 Refer to the bbin docs for more options.
@@ -80,10 +81,10 @@ To test running the script as a whole, use either of the following:
 
 ## Uberscripting
 
-Babashka can combine all namespaces used by a script into one file called an uberscript. There is a script in `./scripts/uberscriptify` that will combine this with the proper header. To create an uberscript, just run:
+Babashka can combine all namespaces used by a script into one file called an uberscript. There is a script in `./scripts/uberscriptify` that will combine this with the proper header. To create an uberscript from the `foo` script, just run:
 
 ```
-./scripts/uberscriptify -s foo
+./scripts/uberscriptify --script foo
 ```
 
 And the resulting file will be in `uberscripts/foo`.

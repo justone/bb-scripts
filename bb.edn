@@ -1,7 +1,6 @@
 {:paths ["src"]
  ;; Keep these in sync with deps.edn
- :deps {comb/comb {:mvn/version "0.1.1"}
-        doric/doric {:mvn/version "0.9.0"}}
+ :deps {justone/bb-scripts {:local/root "."}}
  :tasks
  {test {:extra-paths ["test"]
         :extra-deps {io.github.cognitect-labs/test-runner
