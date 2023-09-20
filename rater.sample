@@ -1,0 +1,216 @@
+-------------------------
+clojure.core/*err*
+   A java.io.Writer object representing standard error for print operations.
+
+nate@hoth  rate-calculator [$!?] at 08:14:17 AM bb-scripts
+❯ ls
+bb.edn  deps.edn  exit.clj  log   names.txt  ping.clj    rater.vim  scripts  test           uberscripts
+data    dev       LICENSE   log2  nums       pretty.clj  README.md  src      test-clusters
+
+nate@hoth  rate-calculator [$!?] at 08:14:18 AM bb-scripts
+❯ ./scripts/rater                                                                                                                 
+Enter values on separate lines. Rates will be calculated.
+13900000 2023-08-29T21:46:02.00Z
+input: 1.39E7 at 2023-08-29T14:46:02-07:00[America/Los_Angeles]
+11,999,797
+input: 1.1999797E7 at 2023-08-31T08:15:10.210571-07:00[America/Los_Angeles]
+rate: 12.723306/s
+remaining time: 943135.129412 s
+estimated finish: 2023-09-11T06:14:05.339571-07:00[America/Los_Angeles]
+^C
+nate@hoth  rate-calculator [$!?⇡] took 5m13s at 08:19:35 AM bb-scripts
+❯ ./scripts/rater
+Enter values on separate lines. Rates will be calculated.
+13900000 2023-08-29T21:46:02.00Z
+input: 1.39E7 at 2023-08-29T14:46:02-07:00[America/Los_Angeles]
+11,999,797
+input: 1.1999797E7 at 2023-08-31T08:19:45.086550-07:00[America/Los_Angeles]
+rate: 12.699932/sone week, three days, twenty-two hours, twenty-seven minutes, fifty seconds
+estimated finish: 2023-09-11T06:47:36.059550-07:00[America/Los_Angeles]
+^P^C
+nate@hoth  rate-calculator [$!?⇡] took 1m21s at 08:20:57 AM bb-scripts
+❯ ./scripts/rater
+Enter values on separate lines. Rates will be calculated.
+13900000 2023-08-29T21:46:02.00Z
+input: 1.39E7 at 2023-08-29T14:46:02-07:00[America/Los_Angeles]
+11,999,797
+input: 1.1999797E7 at 2023-08-31T08:21:04.351791-07:00[America/Los_Angeles]
+rate: 12.693207/s
+remaining time: one week, three days, twenty-two hours, thirty-six minutes, eleven seconds
+estimated finish: 2023-09-11T06:57:15.883791-07:00[America/Los_Angeles]
+11,989,748
+input: 1.1989748E7 at 2023-08-31T08:37:42.919718-07:00[America/Los_Angeles]
+rate: 10.063421/s
+remaining time: one week, six days, eighteen hours, fifty-six minutes, fifty-eight seconds
+estimated finish: 2023-09-14T03:34:41.636718-07:00[America/Los_Angeles]
+^C
+nate@hoth  rate-calculator [$!?⇡] took 17m at 08:37:58 AM bb-scripts
+❯ ./scripts/rater
+Enter values on separate lines. Rates will be calculated.
+13900000 2023-08-29T21:46:02.00Z
+input: 1.39E7 at 2023-08-29T14:46:02-07:00[America/Los_Angeles]
+11,989,477
+input: 1.1989477E7 at 2023-08-31T08:38:12.498122-07:00[America/Los_Angeles]
+rate: 12.675092/s
+remaining time: one week, three days, twenty-two hours, forty-five minutes, eight seconds
+estimated finish: 2023-09-11T07:23:20.942122-07:00[America/Los_Angeles]
+11,974,204
+input: 1.1974204E7 at 2023-08-31T09:11:45.358837-07:00[America/Los_Angeles]
+rate: 7.587707/s
+remaining time: two weeks, four days, six hours, twenty-one minutes, forty-five seconds
+estimated finish: 2023-09-18T15:33:31.050837-07:00[America/Los_Angeles]
+^C
+nate@hoth  rate-calculator [$!?⇡] took 36m23s at 09:14:22 AM bb-scripts
+❯ ./scripts/rater
+Enter values on separate lines. Rates will be calculated.
+13900000 2023-08-29T21:46:02.00Z
+13900000 2023-08-29T21:46:02.00Z 2023-08-29T21:46:02Z
+input: 1.39E7 at 2023-08-29T14:46:02-07:00[America/Los_Angeles]
+11,972,864
+11,972,864 2023-08-31T16:14:50.668345Z
+input: 1.1972864E7 at 2023-08-31T09:14:50.668345-07:00[America/Los_Angeles]
+rate: 12.601535/s
+remaining time: one week, three days, twenty-three hours, fifty-five minutes, eleven seconds
+estimated finish: 2023-09-11T09:10:02.203345-07:00[America/Los_Angeles]
+11,961,488
+11,961,488 2023-08-31T16:39:50.709490Z
+input: 1.1961488E7 at 2023-08-31T09:39:50.709490-07:00[America/Los_Angeles]
+rate: 7.583793/s
+remaining time: two weeks, four days, six hours, seven minutes, twenty-three seconds
+estimated finish: 2023-09-18T15:47:14.241490-07:00[America/Los_Angeles]
+9,656,856
+9,656,856 2023-09-01T15:12:53.093989Z
+input: 9656856.0 at 2023-09-01T08:12:53.093989-07:00[America/Los_Angeles]
+rate: 28.388326/s
+remaining time: three days, twenty-two hours, twenty-nine minutes, twenty-nine seconds
+estimated finish: 2023-09-05T06:42:23.064989-07:00[America/Los_Angeles]
+^C
+nate@hoth  rate-calculator [$!?⇡] took 22h58m39s at 08:13:03 AM bb-scripts
+❯ 13900000 2023-08-29T21:46:02.00Z
+13900000: command not found
+
+nate@hoth  rate-calculator [$!?⇡] at 08:13:20 AM bb-scripts
+❯ ./scripts/rater                                                                                                                                                                                                                                                   
+Enter values on separate lines. Rates will be calculated.
+13900000 2023-08-29T21:46:02.00Z
+13900000 2023-08-29T21:46:02.00Z 2023-08-29T21:46:02Z
+input: 1.39E7 at 2023-08-29T14:46:02-07:00[America/Los_Angeles]
+9,656,856
+9,656,856 2023-09-01T15:13:28.637048Z
+input: 9656856.0 at 2023-09-01T08:13:28.637048-07:00[America/Los_Angeles]
+rate: 18.006385/s
+remaining time: six days, four hours, fifty-eight minutes, twenty-one seconds
+estimated finish: 2023-09-07T13:11:50.407048-07:00[America/Los_Angeles]
+9,286,203
+9,286,203 2023-09-01T20:15:38.607720Z
+input: 9286203.0 at 2023-09-01T13:15:38.607720-07:00[America/Los_Angeles]
+rate: 20.444214/s
+remaining time: five days, six hours, ten minutes, twenty-one seconds
+estimated finish: 2023-09-06T19:26:00.186720-07:00[America/Los_Angeles]
+9,213,820
+9,213,820 2023-09-01T20:55:15.833356Z
+input: 9213820.0 at 2023-09-01T13:55:15.833356-07:00[America/Los_Angeles]
+rate: 30.448527/s
+remaining time: three days, twelve hours, three minutes, twenty-three seconds
+estimated finish: 2023-09-05T01:58:38.975356-07:00[America/Los_Angeles]
+^C
+nate@hoth  rate-calculator [$!?⇡] took 5h42m16s at 01:55:38 PM bb-scripts
+❯ ./scripts/rater
+Enter values on separate lines. Rates will be calculated.
+13900000 2023-08-29T21:46:02.00Z
+13900000 2023-08-29T21:46:02.00Z 2023-08-29T21:46:02Z
+input: 1.39E7 at 2023-08-29T14:46:02-07:00[America/Los_Angeles]
+9,213,820
+9,213,820 2023-09-01T20:55:49.141866Z
+input: 9213820.0 at 2023-09-01T13:55:49.141866-07:00[America/Los_Angeles]
+rate: 18.292019/s
+remaining time: five days, nineteen hours, fifty-five minutes, seven seconds
+estimated finish: 2023-09-07T09:50:56.255866-07:00[America/Los_Angeles]
+^C
+nate@hoth  rate-calculator [$!?⇡] took 14m38s at 02:10:20 PM bb-scripts
+❯ ./scripts/rater
+Enter values on separate lines. Rates will be calculated.
+9,286,203 2023-09-01T20:15:38.607720Z
+9,286,203 2023-09-01T20:15:38.607720Z 2023-09-01T20:15:38.607720Z
+input: 9286203.0 at 2023-09-01T13:15:38.607720-07:00[America/Los_Angeles]
+9,213,820 2023-09-01T20:55:15.833356Z
+9,213,820 2023-09-01T20:55:15.833356Z 2023-09-01T20:55:15.833356Z
+input: 9213820.0 at 2023-09-01T13:55:15.833356-07:00[America/Los_Angeles]
+rate: 30.448527/s
+remaining time: three days, twelve hours, three minutes, twenty-three seconds
+estimated finish: 2023-09-05T01:58:38.975356-07:00[America/Los_Angeles]
+9,115,189
+9,115,189 2023-09-01T21:57:19.813362Z
+input: 9115189.0 at 2023-09-01T14:57:19.813362-07:00[America/Los_Angeles]
+rate: 26.485366/s
+remaining time: three days, twenty-three hours, thirty-five minutes, fifty-nine seconds
+estimated finish: 2023-09-05T14:33:19.262362-07:00[America/Los_Angeles]
+9,026,649
+9,026,649 2023-09-01T23:46:21.898648Z
+input: 9026649.0 at 2023-09-01T16:46:21.898648-07:00[America/Los_Angeles]
+rate: 13.533912/s
+remaining time: one week, seventeen hours, sixteen minutes, five seconds
+estimated finish: 2023-09-09T10:02:27.168648-07:00[America/Los_Angeles]
+8,892,575
+8,892,575 2023-09-02T00:12:14.464575Z
+input: 8892575.0 at 2023-09-01T17:12:14.464575-07:00[America/Los_Angeles]
+rate: 86.356393/s
+remaining time: one day, four hours, thirty-six minutes, fifteen seconds
+estimated finish: 2023-09-02T21:48:29.758575-07:00[America/Los_Angeles]
+^C
+nate@hoth  rate-calculator [$!?⇡] took 3h2m1s at 05:12:23 PM bb-scripts
+❯ ./scripts/rater
+Enter values on separate lines. Rates will be calculated.
+13900000 2023-08-29T21:46:02.00Z
+13900000 2023-08-29T21:46:02.00Z 2023-08-29T21:46:02Z
+input: 1.39E7 at 2023-08-29T14:46:02-07:00[America/Los_Angeles]
+8,885,155
+8,885,155 2023-09-02T00:12:56.077829Z
+input: 8885155.0 at 2023-09-01T17:12:56.077829-07:00[America/Los_Angeles]
+rate: 18.711125/s
+remaining time: five days, eleven hours, fifty-four minutes, nineteen seconds
+estimated finish: 2023-09-07T05:07:15.542829-07:00[America/Los_Angeles]
+5,490,715
+5,490,715 2023-09-05T14:51:22.636118Z
+input: 5490715.0 at 2023-09-05T07:51:22.636118-07:00[America/Los_Angeles]
+rate: 10.882875/s
+remaining time: five days, twenty hours, eight minutes, forty-seven seconds
+estimated finish: 2023-09-11T04:00:10.633118-07:00[America/Los_Angeles]
+
+nate@hoth  rate-calculator [$!?⇡] took 3d14h39m6s at 07:51:33 AM bb-scripts
+❯ ./scripts/rater
+Enter values on separate lines. Rates will be calculated.
+13900000 2023-08-29T21:46:02.00Z
+13900000 2023-08-29T21:46:02.00Z 2023-08-29T21:46:02Z
+input: 1.39E7 at 2023-08-29T14:46:02-07:00[America/Los_Angeles]
+5,490,715
+5,490,715 2023-09-05T14:51:43.599466Z
+input: 5490715.0 at 2023-09-05T07:51:43.599466-07:00[America/Los_Angeles]
+rate: 14.500227/s
+remaining time: four days, nine hours, eleven minutes, four seconds
+estimated finish: 2023-09-09T17:02:47.663466-07:00[America/Los_Angeles]
+5,326,508
+5,326,508 2023-09-06T15:09:20.094332Z
+input: 5326508.0 at 2023-09-06T08:09:20.094332-07:00[America/Los_Angeles]
+rate: 1.877585/s
+remaining time: one month, one day, twenty hours, one minute, thirty-three seconds
+estimated finish: 2023-10-09T04:10:53.285332-07:00[America/Los_Angeles]
+4,806,643
+4,806,643 2023-09-06T23:24:36.728551Z
+input: 4806643.0 at 2023-09-06T16:24:36.728551-07:00[America/Los_Angeles]
+rate: 17.494074/s
+remaining time: three days, four hours, nineteen minutes, eighteen seconds
+estimated finish: 2023-09-09T20:43:55.080551-07:00[America/Los_Angeles]
+3,585,468
+3,585,468 2023-09-07T15:29:11.547540Z
+input: 3585468.0 at 2023-09-07T08:29:11.547540-07:00[America/Los_Angeles]
+rate: 21.100282/s
+remaining time: one day, twenty-three hours, twelve minutes, five seconds
+estimated finish: 2023-09-09T07:41:16.669540-07:00[America/Los_Angeles]
+3,041,130
+3,041,130 2023-09-07T18:46:24.166290Z
+input: 3041130.0 at 2023-09-07T11:46:24.166290-07:00[America/Los_Angeles]
+rate: 46.003171/s
+remaining time: eighteen hours, twenty-one minutes, forty-six seconds
+estimated finish: 2023-09-08T06:08:11.130290-07:00[America/Los_Angeles]
+
