@@ -36,8 +36,12 @@
                 errors))
   ([progname help parsed errors]
    (let [{:keys [summary]} parsed
-         {:keys [message exit]} errors]
-     {:help (format help-fmt progname (or message help) summary)
+         {:keys [message exit]} errors
+         final-message (or message
+                           (-> help
+                               lib.string/dedent
+                               (string/replace "SCRIPT_NAME" progname)))]
+     {:help (format help-fmt progname final-message summary)
       :exit exit})))
 
 (defn print-and-exit
