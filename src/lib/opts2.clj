@@ -46,5 +46,4 @@
 
 (defn print-and-exit
   [{:keys [help exit]}]
-  (println help)
-  (System/exit exit))
+  (throw (ex-info help {:babashka/exit exit})))
