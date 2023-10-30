@@ -8,8 +8,8 @@
 
          Examples:
 
-         SCRIPT_NAME -a 2 -b 4
-         SCRIPT_NAME -a 3 -b 22"
+           SCRIPT_NAME -a 2 -b 4
+           SCRIPT_NAME -a 3 -b 22"
    :progname "adder.clj"
    :cli-options [["-h" "--help" "Show help."]
                  ["-a" "--arg1 arg1" "First number to add." :missing "must supply first number." :parse-fn parse-long]
@@ -30,8 +30,8 @@
    ""
    "Examples:"
    ""
-   "adder.clj -a 2 -b 4"
-   "adder.clj -a 3 -b 22"])
+   "  adder.clj -a 2 -b 4"
+   "  adder.clj -a 3 -b 22"])
 
 (def options
   [""
