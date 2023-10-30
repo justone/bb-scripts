@@ -7,14 +7,13 @@
                        (next)
                        (filter seq)
                        first)
-        [_ indent] (re-matches #"^(\s+).*" candidate)]
+        [_ indent] (when candidate (re-matches #"^(\s+).*" candidate))]
     indent))
 
 (defn dedent
   ([string]
    (dedent (find-indent string) string))
   ([indent string]
-   (let [pattern (re-pattern (str "^" indent))]
-     (->> (string/split-lines string)
-          (map #(string/replace % pattern ""))
-          (string/join "\n")))))
+   (cond->> (string/split-lines string)
+     indent (map #(string/replace % (re-pattern (str "^" indent)) ""))
+     :always (string/join "\n"))))
