@@ -8,8 +8,8 @@
     [doric.org :as dorig.org]
     [doric.core :as doric]
 
-    [lib.opts2 :as opts]
-    [lib.string]
+    [scribe.opts :as opts]
+    [scribe.string]
     ))
 
 (def progname (str *ns*))
@@ -43,7 +43,7 @@
    ["-p" "--plain" "Print one entry per line"]])
 
 (def print-help
-  (lib.string/dedent
+  (scribe.string/dedent
     "    "
     "Print the elements of a path in various ways."))
 
@@ -86,7 +86,7 @@
    ["-e" "--empty" "Start with empty path"]])
 
 (def edit-help
-  (lib.string/dedent
+  (scribe.string/dedent
     "    "
     "Edit elements of a path.
 
@@ -143,7 +143,7 @@
    ["-p" "--path PATH" "Specify path to operate on"]])
 
 (def help
-  (lib.string/dedent
+  (scribe.string/dedent
     "    "
     "Path inspection and manipulation tool.
 

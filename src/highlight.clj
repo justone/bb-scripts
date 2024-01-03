@@ -36,9 +36,9 @@
   blog post: https://stevelosh.com/blog/2021/03/small-common-lisp-cli-programs/"
   (:require [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
-            [lib.highlight :as highlight]
-            [lib.opts2 :as opts]
-            [lib.string]))
+            [scribe.highlight :as highlight]
+            [scribe.opts :as opts]
+            [scribe.string]))
 
 (def cli-options
   [["-h" "--help" "Show help."]
