@@ -3,7 +3,7 @@
     [clojure.tools.cli :refer [parse-opts]]
 
     [lib.opts :as opts]
-    [scribe.time :as time])
+    [lib.time :as time])
   (:gen-class))
 
 (def progname "ftime")
