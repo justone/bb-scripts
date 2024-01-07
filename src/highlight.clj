@@ -1,39 +1,4 @@
 (ns highlight
-  "Colorize matches in streaming text.
-
-  highlight takes a regular expression and highlights any matches in piped
-  input. Each match string gets a unique color, making it useful for quickly
-  categorizing information.
-
-  For example, to compare sha256 sums and identify identical files:
-
-    sha256sum * | highlight '[0-9a-ef]{40,}'
-
-  Or, to track IP addresses in a request log:
-
-    tail -F /var/log/apache/access_log | highlight '\\d+\\.\\d+\\.\\d+\\.\\d+'
-
-  highlight picks colors by hashing matches and using that to index into a set
-  of colors. Two different sets of colors are supported, one for light
-  backgrounds and one for dark backgrounds. By default, colors that will look
-  good on dark backgrounds are used. This indexing will be consistent between
-  runs and can be altered via the --offset and --randomize-offset flags.
-
-  Due to highlight's hashing, it will pick adjacent colors for strings that have
-  identical prefixes and only vary by a few characters. Since this can make
-  differentiating colors difficult, use the --reverse flag to reverse matches
-  before hashing. This will result in highlight selecting colors further apart.
-
-  A match's color can be explicitly specified with the --explicit flag. The
-  color can be specified by comma delimited triplet from 0-5 (e.g. 5,0,0) or
-  the RGB code directly (16-255).
-
-    tail -F foo.log | highlight 'WARN|INFO|ERROR' -e 160:ERROR -e 220:WARN -e 99:INFO
-
-  Use the --print-colors option to print a color table with numbers to use.
-
-  highlight is *heavily* inspired by batchcolor, as detailed in Steve Losh's
-  blog post: https://stevelosh.com/blog/2021/03/small-common-lisp-cli-programs/"
   (:require [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
             [scribe.highlight :as highlight]
@@ -70,9 +35,47 @@
       (and r g b) {:match m1 :rgb-code (highlight/rgb-code (parse-long r)
                                                           (parse-long g)
                                                           (parse-long b))})))
+
+(def usage
+  "Colorize matches in streaming text.
+
+  highlight takes a regular expression and highlights any matches in piped
+  input. Each match string gets a unique color, making it useful for quickly
+  categorizing information.
+
+  For example, to compare sha256 sums and identify identical files:
+
+    sha256sum * | highlight '[0-9a-ef]{40,}'
+
+  Or, to track IP addresses in a request log:
+
+    tail -F /var/log/apache/access_log | highlight '\\d+\\.\\d+\\.\\d+\\.\\d+'
+
+  highlight picks colors by hashing matches and using that to index into a set
+  of colors. Two different sets of colors are supported, one for light
+  backgrounds and one for dark backgrounds. By default, colors that will look
+  good on dark backgrounds are used. This indexing will be consistent between
+  runs and can be altered via the --offset and --randomize-offset flags.
+
+  Due to highlight's hashing, it will pick adjacent colors for strings that have
+  identical prefixes and only vary by a few characters. Since this can make
+  differentiating colors difficult, use the --reverse flag to reverse matches
+  before hashing. This will result in highlight selecting colors further apart.
+
+  A match's color can be explicitly specified with the --explicit flag. The
+  color can be specified by comma delimited triplet from 0-5 (e.g. 5,0,0) or
+  the RGB code directly (16-255).
+
+    tail -F foo.log | highlight 'WARN|INFO|ERROR' -e 160:ERROR -e 220:WARN -e 99:INFO
+
+  Use the --print-colors option to print a color table with numbers to use.
+
+  highlight is *heavily* inspired by batchcolor, as detailed in Steve Losh's
+  blog post: https://stevelosh.com/blog/2021/03/small-common-lisp-cli-programs/")
+
 (defn find-errors
   [parsed]
-  (or (opts/find-errors parsed)
+  (or (opts/find-errors parsed usage)
       (let [{:keys [arguments options]} parsed
             {:keys [explicit]} options
             regex (first arguments)
@@ -143,9 +146,9 @@
 
       :else
       (do
-        (when-some [errors (find-errors parsed)]
-          (->> (opts/format-help (find-ns 'highlight) parsed errors)
-               (opts/print-and-exit)))
+        (some-> (find-errors parsed)
+                (opts/format-help parsed)
+                (opts/print-and-exit))
         (loop []
           (when-let [line (read-line)]
             (println (highlight/add line regex opts))

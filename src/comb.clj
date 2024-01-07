@@ -8,7 +8,7 @@
     )
   (:gen-class))
 
-(def progname "comb")
+(def script-name "comb")
 
 (def cli-options
   [["-t" "--template TEMPLATE" "Template to process"]
@@ -26,7 +26,7 @@
   (let [parsed (parse-opts args cli-options)
         {:keys [options]} parsed]
     (or (some->> (opts/find-errors parsed)
-                 (opts/print-errors progname parsed)
+                 (opts/print-errors script-name parsed)
                  (System/exit))
         (->> (map (partial process options) user/*input*)
              (run! println)))))

@@ -6,7 +6,7 @@
     [lib.time :as time])
   (:gen-class))
 
-(def progname "ftime")
+(def script-name "ftime")
 
 (def cli-options
   [["-f" "--format FORMAT" "Format to use to print the time"
@@ -25,7 +25,7 @@
   (let [parsed (parse-opts args cli-options)
         {:keys [options arguments]} parsed]
     (or (some->> (opts/find-errors parsed)
-                 (opts/print-errors progname parsed)
+                 (opts/print-errors script-name parsed)
                  (System/exit))
         (-> (process (or (some-> arguments first Long.)
                          (time/now-millis)) options)

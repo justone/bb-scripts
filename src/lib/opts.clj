@@ -4,8 +4,8 @@
     ))
 
 (defn print-usage
-  [progname summary]
-  (println "usage: " progname " [opts]")
+  [script-name summary]
+  (println "usage: " script-name " [opts]")
   (println " ")
   (println "options:")
   (println summary))
@@ -24,11 +24,11 @@
       )))
 
 (defn print-errors
-  [progname parsed errors]
+  [script-name parsed errors]
   (let [{:keys [summary]} parsed
         {:keys [message exit]} errors]
     (when message
       (println message)
       (println " "))
-    (print-usage progname summary)
+    (print-usage script-name summary)
     exit))

@@ -8,8 +8,8 @@
     ))
 
 (defn print-usage
-  [progname summary]
-  (println "usage: " progname " [opts]")
+  [script-name summary]
+  (println "usage: " script-name " [opts]")
   (println " ")
   (println "options:")
   (println summary))
@@ -28,13 +28,13 @@
       )))
 
 (defn print-errors
-  [progname parsed errors]
+  [script-name parsed errors]
   (let [{:keys [summary]} parsed
         {:keys [message exit]} errors]
     (when message
       (println message)
       (println " "))
-    (print-usage progname summary)
+    (print-usage script-name summary)
     exit))
 (ns penv
   (:require
@@ -47,7 +47,7 @@
     )
   (:gen-class))
 
-(def progname "penv")
+(def script-name "penv")
 
 (def cli-options
   [["-h" "--help"]])
@@ -92,7 +92,7 @@
   (let [parsed (parse-opts args cli-options)
         {:keys [options]} parsed]
     (or (some->> (opts/find-errors parsed)
-                 (opts/print-errors progname parsed)
+                 (opts/print-errors script-name parsed)
                  (System/exit))
         (process options))))
 (ns user (:require [penv])) (apply penv/-main *command-line-args*)

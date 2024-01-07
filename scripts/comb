@@ -1,5 +1,12 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-cd $(dirname $0)/..
+#_(
+  "exec" "bb" "-I" "$0" "$@"
+  )
 
-bb -cp $(clojure -Spath) -I -m comb -- "$@"
+(require '[babashka.deps :as deps])
+(deps/add-deps '{:deps {justone/bb-scripts {:local/root "."}}})
+(require '[comb])
+
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply comb/-main *command-line-args*))

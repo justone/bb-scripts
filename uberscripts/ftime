@@ -46,8 +46,8 @@
     ))
 
 (defn print-usage
-  [progname summary]
-  (println "usage: " progname " [opts]")
+  [script-name summary]
+  (println "usage: " script-name " [opts]")
   (println " ")
   (println "options:")
   (println summary))
@@ -66,13 +66,13 @@
       )))
 
 (defn print-errors
-  [progname parsed errors]
+  [script-name parsed errors]
   (let [{:keys [summary]} parsed
         {:keys [message exit]} errors]
     (when message
       (println message)
       (println " "))
-    (print-usage progname summary)
+    (print-usage script-name summary)
     exit))
 (ns ftime
   (:require
@@ -82,7 +82,7 @@
     [lib.time :as time])
   (:gen-class))
 
-(def progname "ftime")
+(def script-name "ftime")
 
 (def cli-options
   [["-f" "--format FORMAT" "Format to use to print the time"
@@ -101,7 +101,7 @@
   (let [parsed (parse-opts args cli-options)
         {:keys [options arguments]} parsed]
     (or (some->> (opts/find-errors parsed)
-                 (opts/print-errors progname parsed)
+                 (opts/print-errors script-name parsed)
                  (System/exit))
         (-> (process (or (some-> arguments first Long.)
                          (time/now-millis)) options)

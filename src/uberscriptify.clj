@@ -8,7 +8,7 @@
     [lib.opts :as opts])
   (:gen-class))
 
-(def progname "uberscriptify")
+(def script-name "uberscriptify")
 
 (def stubdir "scripts")
 
@@ -78,6 +78,6 @@
   (let [parsed (parse-opts args cli-options)
         {:keys [options]} parsed]
     (or (some->> (find-errors parsed)
-                 (opts/print-errors progname parsed)
+                 (opts/print-errors script-name parsed)
                  (System/exit))
         (process options))))

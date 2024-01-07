@@ -9,7 +9,7 @@
     )
   (:gen-class))
 
-(def progname "penv")
+(def script-name "penv")
 
 (def cli-options
   [["-h" "--help"]])
@@ -54,6 +54,6 @@
   (let [parsed (parse-opts args cli-options)
         {:keys [options]} parsed]
     (or (some->> (opts/find-errors parsed)
-                 (opts/print-errors progname parsed)
+                 (opts/print-errors script-name parsed)
                  (System/exit))
         (process options))))
