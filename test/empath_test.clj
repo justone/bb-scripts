@@ -17,7 +17,7 @@
        "| /usr/local/bin | true   | true | false | false     |\n"
        "|----------------+--------+------+-------+-----------|"))
 
-(deftest print
+(deftest print-path
   (testing "prepare"
     (is (= table-result
            (prepare-output {} (analyze "/usr/bin:/usr/local/bin"))))
@@ -38,7 +38,7 @@
            (prepare-output {:plain true} (analyze "/usr/bin:/usr/local/bin"))))
     ))
 
-(deftest edit
+(deftest edit-path
   (testing "munge"
     (is (= "/usr/bin"
            (munge-path ":" ["append" "/usr/bin"])))
