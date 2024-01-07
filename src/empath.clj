@@ -12,7 +12,7 @@
     [scribe.string]
     ))
 
-(def script-name (opts/divine-script-name))
+(def script-name (opts/detect-script-name))
 
 
 ;; Common utilities
