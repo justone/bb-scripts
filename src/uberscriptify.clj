@@ -26,8 +26,8 @@
 
 (defn find-errors
   [parsed]
-  (opts/find-errors parsed)
-  #_(or (opts/find-errors parsed)
+  (opts/validate parsed)
+  #_(or (opts/validate parsed)
         (let [{:keys [arguments]} parsed]
           (cond
             (zero? (count arguments))

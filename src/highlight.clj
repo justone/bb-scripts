@@ -75,7 +75,7 @@
 
 (defn find-errors
   [parsed]
-  (or (opts/find-errors parsed usage)
+  (or (opts/validate parsed usage)
       (let [{:keys [arguments options]} parsed
             {:keys [explicit]} options
             regex (first arguments)

@@ -70,7 +70,7 @@
   [global-options subargs]
   (let [parsed (parse-opts subargs print-options)
         {:keys [options]} parsed]
-    (or (some-> (opts/find-errors parsed print-usage)
+    (or (some-> (opts/validate parsed print-usage)
                 (opts/format-help (str script-name " print") parsed)
                 (opts/print-and-exit))
         (->> (get-path global-options)
@@ -116,7 +116,7 @@
 
 (defn find-edit-errors
   [parsed]
-  (or (opts/find-errors parsed edit-usage)
+  (or (opts/validate parsed edit-usage)
       (let [{:keys [arguments]} parsed]
         (cond
           (odd? (count arguments))
@@ -172,7 +172,7 @@
 
 (defn find-errors
   [parsed]
-  (or (opts/find-errors parsed global-usage)
+  (or (opts/validate parsed global-usage)
       (let [{:keys [arguments]} parsed
             subcommand (-> arguments first keyword)]
         (cond
