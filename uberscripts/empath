@@ -44,7 +44,7 @@
       (let [parsed (parse-opts args [[\"-h\" \"--help\" \"Show help\"]
                                      [\"-n\" \"--name NAME\" \"Name to use\" :default \"world\"]])
             {:keys [name]} (:options parsed)]
-        (or (some-> (opts/find-errors parsed usage-text)
+        (or (some-> (opts/validate parsed usage-text)
                     (opts/format-help parsed)
                     (opts/print-and-exit))
             (println \"Hello\" name))))
@@ -54,7 +54,7 @@
             [clojure.string :as string]
             [scribe.string]))
 
-(defn find-errors
+(defn validate
   "Look for the most common of errors:
   * `--help` was passed
   * clojure.tools.cli detected errors
@@ -62,25 +62,28 @@
   To detect other errors specific to a given script, wrap the call with an
   `or`, like this:
 
-  (or (opts/find-errors parsed usage-text)
-      (find-errors parsed))
+  (or (opts/validate parsed usage-text)
+      (script-specific-validate parsed))
 
-  The script-specific find-errors function should return a map with information
+  The script-specific-validate function should return a map with information
   about the error that occurred. The keys are:
   * :message - (optional) Message to be printed
   * :exit - The numeric exit code that should be returned
-  * :wrap"
+  * :wrap-context - Whether or not to wrap the message with script help heading
+                    and options documentation"
   [parsed usage]
   (let [{:keys [errors options]} parsed
         {:keys [help]} options]
     (cond
       help
-      {:message usage
-       :exit 0}
+      {:exit 0
+       :message usage
+       :wrap-context true}
 
       errors
-      {:message (string/join "\n" errors)
-       :exit 1})))
+      {:exit 1
+       :message (string/join "\n" errors)
+       :wrap-context true})))
 
 (defn detect-script-name
   "Detect the name of the currently running script, for usage in the printed
@@ -103,18 +106,20 @@
     %s"))
 
 (defn format-help
-  "Take an error (as returned from `find-errors`) and format the help message
+  "Take an error (as returned from `validate`) and format the help message
   that will be printed to the end user."
   ([errors parsed]
    (format-help errors (detect-script-name) parsed))
   ([errors script-name-or-ns parsed]
    (let [script-name (str script-name-or-ns)
          {:keys [summary]} parsed
-         {:keys [message exit]} errors
+         {:keys [message exit wrap-context]} errors
          final-message (-> message
                            scribe.string/dedent
                            (string/replace "SCRIPT_NAME" script-name))]
-     {:help (format help-fmt script-name final-message summary)
+     {:help (if wrap-context
+              (format help-fmt script-name final-message summary)
+              final-message)
       :exit exit})))
 
 (defn print-and-exit
@@ -390,7 +395,7 @@
   [global-options subargs]
   (let [parsed (parse-opts subargs print-options)
         {:keys [options]} parsed]
-    (or (some-> (opts/find-errors parsed print-usage)
+    (or (some-> (opts/validate parsed print-usage)
                 (opts/format-help (str script-name " print") parsed)
                 (opts/print-and-exit))
         (->> (get-path global-options)
@@ -436,7 +441,7 @@
 
 (defn find-edit-errors
   [parsed]
-  (or (opts/find-errors parsed edit-usage)
+  (or (opts/validate parsed edit-usage)
       (let [{:keys [arguments]} parsed]
         (cond
           (odd? (count arguments))
@@ -492,7 +497,7 @@
 
 (defn find-errors
   [parsed]
-  (or (opts/find-errors parsed global-usage)
+  (or (opts/validate parsed global-usage)
       (let [{:keys [arguments]} parsed
             subcommand (-> arguments first keyword)]
         (cond
