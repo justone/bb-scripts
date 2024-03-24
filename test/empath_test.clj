@@ -6,37 +6,35 @@
 
     [cheshire.core :as json]
 
-    [empath :refer [prepare-output munge-path analyze]]
-    ))
+    [empath :refer [prepare-output munge-path analyze]]))
 
 (def table-result
-  (str "|----------------+--------+------+-------+-----------|\n"
-       "|     Element    | Exists |  Dir |  File | Can Write |\n"
-       "|----------------+--------+------+-------+-----------|\n"
-       "| /usr/bin       | true   | true | false | false     |\n"
-       "| /usr/local/bin | true   | true | false | false     |\n"
-       "|----------------+--------+------+-------+-----------|"))
+  (str "|-----------+--------+------+-------+-----------|\n"
+       "|  Element  | Exists |  Dir |  File | Can Write |\n"
+       "|-----------+--------+------+-------+-----------|\n"
+       "| /usr/bin  | true   | true | false | false     |\n"
+       "| /usr/sbin | true   | true | false | false     |\n"
+       "|-----------+--------+------+-------+-----------|"))
 
 (deftest print
   (testing "prepare"
     (is (= table-result
-           (prepare-output {} (analyze "/usr/bin:/usr/local/bin"))))
+           (prepare-output {} (analyze "/usr/bin:/usr/sbin"))))
     (is (= table-result
-           (prepare-output {:table true} (analyze "/usr/bin:/usr/local/bin"))))
+           (prepare-output {:table true} (analyze "/usr/bin:/usr/sbin"))))
     (is (= [{"element" "/usr/bin" "exists" true "dir" true "file" false "can-write" false}
-            {"element" "/usr/local/bin" "exists" true "dir" true "file" false "can-write" false}]
-           (-> (prepare-output {:json true} (analyze "/usr/bin:/usr/local/bin"))
+            {"element" "/usr/sbin" "exists" true "dir" true "file" false "can-write" false}]
+           (-> (prepare-output {:json true} (analyze "/usr/bin:/usr/sbin"))
                (string/split #"\n")
                (->> (map json/parse-string)))))
     (is (= [{:element "/usr/bin" :exists true :dir true :file false :can-write false}
-            {:element "/usr/local/bin" :exists true :dir true :file false :can-write false}]
-           (-> (prepare-output {:edn true} (analyze "/usr/bin:/usr/local/bin"))
+            {:element "/usr/sbin" :exists true :dir true :file false :can-write false}]
+           (-> (prepare-output {:edn true} (analyze "/usr/bin:/usr/sbin"))
                (string/split #"\n")
                (->> (map edn/read-string)))))
     (is (= (str "/usr/bin\n"
-                "/usr/local/bin")
-           (prepare-output {:plain true} (analyze "/usr/bin:/usr/local/bin"))))
-    ))
+                "/usr/sbin")
+           (prepare-output {:plain true} (analyze "/usr/bin:/usr/sbin"))))))
 
 (deftest edit
   (testing "munge"
