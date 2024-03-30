@@ -4,11 +4,10 @@
     [clojure.java.shell :as sh]
     [clojure.string :as string]
     [clojure.tools.cli :refer [parse-opts]]
-
-    [lib.opts :as opts])
+    [scribe.opts :as opts])
   (:gen-class))
 
-(def script-name "uberscriptify")
+(def script-name (opts/detect-script-name))
 
 (def stubdir "scripts")
 
@@ -23,16 +22,6 @@
    ["-o" "--out OUTDIR" "Output directory"
     :default "uberscripts"]
    ["-h" "--help"]])
-
-(defn find-errors
-  [parsed]
-  (opts/find-errors parsed)
-  #_(or (opts/find-errors parsed)
-        (let [{:keys [arguments]} parsed]
-          (cond
-            (zero? (count arguments))
-            {:message "pass in millis as the first argument"
-             :exit 1}))))
 
 (defn get-classpath
   []
@@ -74,10 +63,15 @@
 #_(process {:script "ftime" :out "uberscripts"})
 #_(create-uberscript "ftime")
 
+(def usage
+  "Create uberscripts from namespaces in src. Specify script name with -s.
+
+  SCRIPT_NAME -s foo")
+
 (defn -main [& args]
   (let [parsed (parse-opts args cli-options)
         {:keys [options]} parsed]
-    (or (some->> (find-errors parsed)
-                 (opts/print-errors script-name parsed)
-                 (System/exit))
+    (or (some-> (opts/validate parsed usage)
+                (opts/format-help script-name parsed)
+                (opts/print-and-exit))
         (process options))))

@@ -2,11 +2,11 @@
   (:require
     [clojure.tools.cli :refer [parse-opts]]
 
-    [lib.opts :as opts]
+    [scribe.opts :as opts]
     [lib.time :as time])
   (:gen-class))
 
-(def script-name "ftime")
+(def script-name (opts/detect-script-name))
 
 (def cli-options
   [["-f" "--format FORMAT" "Format to use to print the time"
@@ -24,9 +24,9 @@
 (defn -main [& args]
   (let [parsed (parse-opts args cli-options)
         {:keys [options arguments]} parsed]
-    (or (some->> (opts/find-errors parsed)
-                 (opts/print-errors script-name parsed)
-                 (System/exit))
+    (or (some-> (opts/validate parsed "Format time at the command line. Uses current time unless millis passed on stdin.")
+                (opts/format-help script-name parsed)
+                (opts/print-and-exit))
         (-> (process (or (some-> arguments first Long.)
                          (time/now-millis)) options)
             (println)))))
