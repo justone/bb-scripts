@@ -17,4 +17,4 @@
  ;; Keep these in sync with bb.edn
  :deps {comb/comb {:mvn/version "0.1.1"}
         doric/doric {:mvn/version "0.9.0"}
-        org.endot/scribe {:local/root "../scribe/"}}}
+        org.endot/scribe {:mvn/version "1.0.0"}}}
