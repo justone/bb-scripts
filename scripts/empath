@@ -1,5 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bb
 
-cd $(dirname $0)/..
+(require '[babashka.deps :as deps])
+(deps/add-deps '{:deps {justone/bb-scripts {:local/root "."}}})
+(require '[empath])
 
-bb -cp $(clojure -Spath) -m empath -- "$@"
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply empath/-main *command-line-args*))

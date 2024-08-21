@@ -8,11 +8,11 @@
     [doric.org :as dorig.org]
     [doric.core :as doric]
 
-    [lib.opts2 :as opts]
-    [lib.string]
+    [scribe.opts :as opts]
+    [scribe.string]
     ))
 
-(def progname (str *ns*))
+(def script-name (opts/detect-script-name))
 
 
 ;; Common utilities
@@ -42,8 +42,8 @@
    ["-j" "--json" "Print raw json"]
    ["-p" "--plain" "Print one entry per line"]])
 
-(def print-help
-  (lib.string/dedent
+(def print-usage
+  (scribe.string/dedent
     "    "
     "Print the elements of a path in various ways."))
 
@@ -70,9 +70,9 @@
   [global-options subargs]
   (let [parsed (parse-opts subargs print-options)
         {:keys [options]} parsed]
-    (or (when-some [errors (opts/find-errors parsed)]
-          (->> (opts/format-help (str progname " print") print-help parsed errors)
-               (opts/print-and-exit)))
+    (or (some-> (opts/validate parsed print-usage)
+                (opts/format-help (str script-name " print") parsed)
+                (opts/print-and-exit))
         (->> (get-path global-options)
              (analyze)
              (prepare-output options)
@@ -85,8 +85,8 @@
   [["-h" "--help" "Show help"]
    ["-e" "--empty" "Start with empty path"]])
 
-(def edit-help
-  (lib.string/dedent
+(def edit-usage
+  (scribe.string/dedent
     "    "
     "Edit elements of a path.
 
@@ -116,7 +116,7 @@
 
 (defn find-edit-errors
   [parsed]
-  (or (opts/find-errors parsed)
+  (or (opts/validate parsed edit-usage)
       (let [{:keys [arguments]} parsed]
         (cond
           (odd? (count arguments))
@@ -127,9 +127,9 @@
   [global-options subargs]
   (let [parsed (parse-opts subargs edit-options :in-order true)
         {:keys [options arguments]} parsed]
-    (or (when-some [errors (find-edit-errors parsed)]
-          (->> (opts/format-help (str progname " edit") edit-help parsed errors)
-               (opts/print-and-exit)))
+    (or (some-> (find-edit-errors parsed)
+                (opts/format-help (str script-name " edit") parsed)
+                (opts/print-and-exit))
         (let [path (if (:empty options)
                      ":"
                      (get-path global-options))]
@@ -142,8 +142,8 @@
   [["-h" "--help" "Show help"]
    ["-p" "--path PATH" "Specify path to operate on"]])
 
-(def help
-  (lib.string/dedent
+(def global-usage
+  (scribe.string/dedent
     "    "
     "Path inspection and manipulation tool.
 
@@ -172,7 +172,7 @@
 
 (defn find-errors
   [parsed]
-  (or (opts/find-errors parsed)
+  (or (opts/validate parsed global-usage)
       (let [{:keys [arguments]} parsed
             subcommand (-> arguments first keyword)]
         (cond
@@ -186,7 +186,7 @@
 (defn -main [& args]
   (let [parsed (parse-opts args cli-options :in-order true)
         {:keys [options arguments]} parsed]
-    (or (when-some [errors (find-errors parsed)]
-          (->> (opts/format-help progname help parsed errors)
-               (opts/print-and-exit)))
+    (or (some-> (find-errors parsed)
+                (opts/format-help script-name parsed)
+                (opts/print-and-exit))
         (process options arguments))))

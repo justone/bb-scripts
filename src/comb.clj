@@ -2,13 +2,12 @@
   (:require
     [clojure.tools.cli :refer [parse-opts]]
 
-    [lib.opts :as opts]
+    [scribe.opts :as opts]
     [comb.template :as template]
-    [user]
-    )
+    [user])
   (:gen-class))
 
-(def progname "comb")
+(def script-name (opts/detect-script-name))
 
 (def cli-options
   [["-t" "--template TEMPLATE" "Template to process"]
@@ -25,8 +24,8 @@
 (defn -main [& args]
   (let [parsed (parse-opts args cli-options)
         {:keys [options]} parsed]
-    (or (some->> (opts/find-errors parsed)
-                 (opts/print-errors progname parsed)
-                 (System/exit))
+    (or (some-> (opts/validate parsed "Command line templating using the comb library.")
+                (opts/format-help script-name parsed)
+                (opts/print-and-exit))
         (->> (map (partial process options) user/*input*)
              (run! println)))))

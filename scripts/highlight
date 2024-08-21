@@ -1,5 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bb
 
-cd $(dirname $0)/..
+(require '[babashka.deps :as deps])
+(deps/add-deps '{:deps {justone/bb-scripts {:local/root "."}}})
+(require '[highlight])
 
-bb -cp $(clojure -Spath) -m highlight -- "$@"
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply highlight/-main *command-line-args*))

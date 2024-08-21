@@ -16,7 +16,7 @@
        "| /usr/sbin | true   | true | false | false     |\n"
        "|-----------+--------+------+-------+-----------|"))
 
-(deftest print
+(deftest print-path
   (testing "prepare"
     (is (= table-result
            (prepare-output {} (analyze "/usr/bin:/usr/sbin"))))
@@ -36,7 +36,7 @@
                 "/usr/sbin")
            (prepare-output {:plain true} (analyze "/usr/bin:/usr/sbin"))))))
 
-(deftest edit
+(deftest edit-path
   (testing "munge"
     (is (= "/usr/bin"
            (munge-path ":" ["append" "/usr/bin"])))

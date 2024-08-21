@@ -1,4 +1,42 @@
 (ns highlight
+  (:require [clojure.string :as string]
+            [clojure.tools.cli :refer [parse-opts]]
+            [scribe.highlight :as highlight]
+            [scribe.opts :as opts]
+            [scribe.string]))
+
+(def cli-options
+  [["-h" "--help" "Show help."]
+   [nil "--dark" "Use dark mode. (default)"
+    :default-desc ""
+    :default true]
+   [nil "--light" "Use light mode."]
+   ["-o" "--offset OFFSET" "Specify the color offset. (default: 0)"
+    :default 0
+    :default-desc ""
+    :parse-fn parse-long]
+   ["-r" "--randomize-offset" "Randomize the color offset."]
+   ["-R" "--reverse" "Reverse matched strings before assigning a color."
+    :default-desc ""
+    :default false]
+   ["-e" "--explicit R,G,B:STRING" "Colorize a match explicitly."
+    :default []
+    :default-desc ""
+    :update-fn conj
+    :multi true]
+   [nil "--print-colors" "Print color reference."]])
+
+(defn parse-explicit
+  [opt]
+  (let [[_ r g b m1] (re-matches #"([0-5]),([0-5]),([0-5]):(.*)" opt)
+        [_ rgb m2] (re-matches #"(\d{1,3}):(.*)" opt)]
+    (cond
+      rgb         {:match m2 :rgb-code (parse-long rgb)}
+      (and r g b) {:match m1 :rgb-code (highlight/rgb-code (parse-long r)
+                                                          (parse-long g)
+                                                          (parse-long b))})))
+
+(def usage
   "Colorize matches in streaming text.
 
   highlight takes a regular expression and highlights any matches in piped
@@ -33,46 +71,11 @@
   Use the --print-colors option to print a color table with numbers to use.
 
   highlight is *heavily* inspired by batchcolor, as detailed in Steve Losh's
-  blog post: https://stevelosh.com/blog/2021/03/small-common-lisp-cli-programs/"
-  (:require [clojure.string :as string]
-            [clojure.tools.cli :refer [parse-opts]]
-            [lib.highlight :as highlight]
-            [lib.opts2 :as opts]
-            [lib.string]))
+  blog post: https://stevelosh.com/blog/2021/03/small-common-lisp-cli-programs/")
 
-(def cli-options
-  [["-h" "--help" "Show help."]
-   [nil "--dark" "Use dark mode. (default)"
-    :default-desc ""
-    :default true]
-   [nil "--light" "Use light mode."]
-   ["-o" "--offset OFFSET" "Specify the color offset. (default: 0)"
-    :default 0
-    :default-desc ""
-    :parse-fn parse-long]
-   ["-r" "--randomize-offset" "Randomize the color offset."]
-   ["-R" "--reverse" "Reverse matched strings before assigning a color."
-    :default-desc ""
-    :default false]
-   ["-e" "--explicit R,G,B:STRING" "Colorize a match explicitly."
-    :default []
-    :default-desc ""
-    :update-fn conj
-    :multi true]
-   [nil "--print-colors" "Print color reference."]])
-
-(defn parse-explicit
-  [opt]
-  (let [[_ r g b m1] (re-matches #"([0-5]),([0-5]),([0-5]):(.*)" opt)
-        [_ rgb m2] (re-matches #"(\d{1,3}):(.*)" opt)]
-    (cond
-      rgb         {:match m2 :rgb-code (parse-long rgb)}
-      (and r g b) {:match m1 :rgb-code (highlight/rgb-code (parse-long r)
-                                                          (parse-long g)
-                                                          (parse-long b))})))
 (defn find-errors
   [parsed]
-  (or (opts/find-errors parsed)
+  (or (opts/validate parsed usage)
       (let [{:keys [arguments options]} parsed
             {:keys [explicit]} options
             regex (first arguments)
@@ -143,9 +146,9 @@
 
       :else
       (do
-        (when-some [errors (find-errors parsed)]
-          (->> (opts/format-help (find-ns 'highlight) parsed errors)
-               (opts/print-and-exit)))
+        (some-> (find-errors parsed)
+                (opts/format-help parsed)
+                (opts/print-and-exit))
         (loop []
           (when-let [line (read-line)]
             (println (highlight/add line regex opts))

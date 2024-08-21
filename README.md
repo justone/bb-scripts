@@ -53,11 +53,14 @@ To create a script, you need to create two files. For instance, to create a new 
 
 `script/foo` - a Babashka dev runner
 ```
-#!/usr/bin/env bash
+#!/usr/bin/env bb
 
-cd $(dirname $0)/..
+(require '[babashka.deps :as deps])
+(deps/add-deps '{:deps {justone/bb-scripts {:local/root "."}}})
+(require '[foo])
 
-bb -cp $(clojure -Spath) -m foo -- "$@"
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply foo/-main *command-line-args*))
 ```
 
 `src/foo.clj` - the Clojure source for the script

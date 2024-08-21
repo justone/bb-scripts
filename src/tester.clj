@@ -2,12 +2,10 @@
   (:require
     [clojure.tools.cli :refer [parse-opts]]
 
-    [lib.opts :as opts]
-    [user]
-    )
+    [scribe.opts :as opts])
   (:gen-class))
 
-(def progname "tester")
+(def script-name (opts/detect-script-name))
 
 (def cli-options
   [["-h" "--help"]])
@@ -19,7 +17,7 @@
 (defn -main [& args]
   (let [parsed (parse-opts args cli-options)
         {:keys [options]} parsed]
-    (or (some->> (opts/find-errors parsed)
-                 (opts/print-errors progname parsed)
-                 (System/exit))
+    (or (some-> (opts/validate parsed "Test script for copying.")
+                (opts/format-help script-name parsed)
+                (opts/print-and-exit))
         (process options))))
