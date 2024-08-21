@@ -88,7 +88,8 @@
             (println \"Hello\" name))))
 
   For a more complete sample script, check out `samples` in the repository."
-  (:require [clojure.java.io :as io]
+  (:require [babashka.tasks :as tasks]
+            [clojure.java.io :as io]
             [clojure.string :as string]
             [scribe.string]))
 
@@ -127,10 +128,13 @@
   "Detect the name of the currently running script, for usage in the printed
   help."
   ([]
-   (or (some-> (System/getProperty "babashka.file")
+   (or (some->> (tasks/current-task)
+                :name
+                (format "bb %s"))
+       (some-> (System/getProperty "babashka.file")
                detect-script-name)
        ;; Fallback if we're using the REPL for development
-       "script-name-repl-fallback"))
+       "script"))
   ([filename]
    (.getName (io/file filename))))
 
@@ -193,7 +197,7 @@
 (defn -main [& args]
   (let [parsed (parse-opts args cli-options)
         {:keys [options arguments]} parsed]
-    (or (some-> (opts/validate parsed "Format time at the command line.")
+    (or (some-> (opts/validate parsed "Format time at the command line. Uses current time unless millis passed on stdin.")
                 (opts/format-help script-name parsed)
                 (opts/print-and-exit))
         (-> (process (or (some-> arguments first Long.)
