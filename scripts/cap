@@ -1,0 +1,10 @@
+#!/usr/bin/env bb
+
+(require '[babashka.deps :as deps])
+(deps/add-deps '{:deps {justone/bb-scripts {:local/root "."}}})
+(require '[cap])
+
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply cap/-main *command-line-args*))
+
+; vim: set ft=clojure:

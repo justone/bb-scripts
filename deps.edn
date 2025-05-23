@@ -6,6 +6,7 @@
                               ;; This has to be here instead of as a transitive dependency of scribe is because there's no clojars release
                               io.github.babashka/tasks {:sha "d7085862774d0a8df9bc43e9aa969896741bc0e7"}
                               babashka/process {:mvn/version "0.4.16"}
+                              babashka/babashka.pods {:mvn/version "0.2.0"}
                               babashka/fs {:mvn/version "0.2.15"}}
                  :extra-paths ["dev"]}
            :test {:extra-paths ["test"]
@@ -17,6 +18,7 @@
                   :main-opts ["-m" "cognitect.test-runner"]}}
  :paths ["src"]
  ;; Keep these in sync with bb.edn
- :deps {comb/comb {:mvn/version "0.1.1"}
+ :deps {com.github.seancorfield/honeysql {:mvn/version "2.7.1310"}
+        comb/comb {:mvn/version "0.1.1"}
         doric/doric {:mvn/version "0.9.0"}
         org.endot/scribe {:mvn/version "1.0.0"}}}
