@@ -91,12 +91,25 @@
   (->> (sqlite/query location (find-captures-query args opts))
        (mapv decode-captures)))
 
+(defn get-capture-query
+  [id]
+  (sql/format {:select :*
+               :from :captures
+               :where [:= :id id]}))
+
+(defn get-capture
+  [{:db/keys [location]} id]
+  (->> (sqlite/query location (get-capture-query id))
+       (mapv decode-captures)
+       first))
+
 (defn find-lines-query
-  [id _opts]
+  [id {:keys [limit]}]
   (cond-> {:select :*
            :from :lines
            :where [:= :capture_id id]
            :order-by [:id]}
+    limit (helpers/limit limit)
     :finally (sql/format)))
 
 (defn get-lines
@@ -133,6 +146,9 @@
 
   (find-lines-query 2 nil)
   (get-lines {:db/location "cap.db"} {:id 2} nil)
+
+  (get-capture-query 14)
+  (get-capture {:db/location "cap.db"} "14")
 
   (table-info "cap.db" "captures")
 
