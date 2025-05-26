@@ -7,7 +7,9 @@
                               io.github.babashka/tasks {:sha "d7085862774d0a8df9bc43e9aa969896741bc0e7"}
                               babashka/process {:mvn/version "0.4.16"}
                               babashka/babashka.pods {:mvn/version "0.2.0"}
-                              babashka/fs {:mvn/version "0.2.15"}}
+                              babashka/fs {:mvn/version "0.2.15"}
+                              ;; deps that are dynamically loaded in babashka
+                              com.github.seancorfield/honeysql {:mvn/version "2.7.1310"}}
                  :extra-paths ["dev"]}
            :test {:extra-paths ["test"]
                   :extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
@@ -18,7 +20,6 @@
                   :main-opts ["-m" "cognitect.test-runner"]}}
  :paths ["src"]
  ;; Keep these in sync with bb.edn
- :deps {com.github.seancorfield/honeysql {:mvn/version "2.7.1310"}
-        comb/comb {:mvn/version "0.1.1"}
+ :deps {comb/comb {:mvn/version "0.1.1"}
         doric/doric {:mvn/version "0.9.0"}
         org.endot/scribe {:mvn/version "1.0.0"}}}

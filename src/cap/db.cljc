@@ -2,13 +2,19 @@
   (:require [babashka.pods :as pods]
             [cheshire.core :as json]
             [clojure.string :as str]
-            [honey.sql :as sql]
-            [honey.sql.helpers :as helpers])
+            #?@(:bb []
+                :clj [[honey.sql :as sql]
+                      [honey.sql.helpers :as helpers]]))
   (:import (java.time LocalDateTime ZonedDateTime ZoneId)
            (java.time.format DateTimeFormatter)))
 
 (pods/load-pod 'org.babashka/go-sqlite3 "0.2.7")
 (require '[pod.babashka.go-sqlite3 :as sqlite])
+
+#?(:bb (do (require '[babashka.deps :as deps])
+           (deps/add-deps '{:deps {com.github.seancorfield/honeysql {:mvn/version "2.7.1310"}}})
+           (require '[honey.sql :as sql])
+           (require '[honey.sql.helpers :as helpers])))
 
 (defn table-info
   [database table-name]
