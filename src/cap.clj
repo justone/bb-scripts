@@ -71,7 +71,8 @@
 
 (def opts
   {:cli-options [["-h" "--help" "Show help"]
-                 ["-d" "--db DB" "Database file"]]
+                 ["-d" "--db DB" "Database file"
+                  :default "cap.db"]]
    :usage "Capture and retrieve output in the shell.
 
           Available subcommands:
@@ -85,6 +86,8 @@
                                      ["-d" "--directory DIRECTORY" "Directory to associate with capture."]
                                      ["-s" "--session SESSION" "Session to associate with capture."]]
                        :usage "Adds a capture."}
+                 :init {:cli-options [["-h" "--help" "Show help"]]
+                        :usage "Initialize."}
                  :get {:cli-options [["-h" "--help" "Show help"]
                                      ["-S" "--all-sessions" "Return captures from all sessions."]
                                      ["-D" "--all-directories" "Return captures from all directories."]
@@ -103,10 +106,18 @@
                        ;                     :message "Must chose --list or --previous"})))
                        :usage "Retrieve captures."}}})
 
+(defn init
+  [config _opts]
+  (db/init config)
+  (println "Initialization complete."))
+
 (defn -main [& _args]
   (let [parsed (multi/entry opts)
         combined-options (apply merge (map :options parsed))
-        config {:db/location "cap.db"}]
+        config {:db/location (-> parsed first :options :db)}]
+    ; (pprint parsed)
+    ; (pprint config)
     (case (-> parsed second :command)
       :add (capture config combined-options)
-      :get (get-captures config combined-options))))
+      :get (get-captures config combined-options)
+      :init (init config combined-options))))
