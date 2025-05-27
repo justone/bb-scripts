@@ -2,6 +2,7 @@
   (:require [cap.db :as db]
             [cap.multi :as multi]
             [doric.core :as doric]
+            [doric.org]
             [babashka.process :as p]
             [clojure.string :as str]
             [clojure.pprint :refer [pprint]])
