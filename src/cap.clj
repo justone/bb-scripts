@@ -1,8 +1,8 @@
 (ns cap
   (:require [cap.db :as db]
             [cap.multi :as multi]
-            [doric.core :as doric]
             [doric.org]
+            [doric.core :as doric]
             [babashka.process :as p]
             [clojure.string :as str]
             [clojure.pprint :refer [pprint]])
