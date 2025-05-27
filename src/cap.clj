@@ -54,16 +54,24 @@
   (p/shell {:continue true :in (str/join "\n" data)} (format "fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-d:preview-page-down --bind=ctrl-u:preview-page-up --header \"Enter prints lines, CTRL-C exits\" --preview \"echo {} | cut -d: -f1 | head -1 | xargs -I %% sh -c '%s get --limit 10 -c %%'\" --bind \"enter:execute(echo {} | cut -d: -f1 | head -1 | xargs -I %% sh -c '%s get -c %%')+abort\"" self-script self-script)))
 
 (defn get-captures
-  [config {:keys [all-sessions all-directories previous limit id list-raw interactive]}]
+  [config {:keys [all-sessions all-directories previous limit id interactive]}]
   (let [args (cond-> {}
                (not all-sessions) (assoc :session (current-session))
                (not all-directories) (assoc :directory (current-directory)))
         captures (db/find-captures config args {:limit (if previous 1 limit)})]
     (cond
-      previous (run! println (map :line (db/get-lines config (first captures) {:limit limit})))
       id (run! println (map :line (db/get-lines config (db/get-capture config id) {:limit limit})))
       interactive (interactive-picker (->> (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %))) captures)
                     (map simple-line)))
+      previous (run! println (map :line (db/get-lines config (first captures) {:limit limit}))))))
+
+(defn list-captures
+  [config {:keys [all-sessions all-directories previous limit list-raw]}]
+  (let [args (cond-> {}
+               (not all-sessions) (assoc :session (current-session))
+               (not all-directories) (assoc :directory (current-directory)))
+        captures (db/find-captures config args {:limit (if previous 1 limit)})]
+    (cond
       list-raw (->> (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %))) captures)
                     (run! (comp println simple-line)))
       :else (->> (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %))) captures)
@@ -80,6 +88,8 @@
 
           add - Add a new capture
           get - Retrieve a previous capture
+          init - Initialize database for capture data
+          list - List previous captures
 
           Pass '-h' to see further help on each subcommand."
    :subcommands {:add {:cli-options [["-h" "--help" "Show help"]
@@ -92,20 +102,18 @@
                  :get {:cli-options [["-h" "--help" "Show help"]
                                      ["-S" "--all-sessions" "Return captures from all sessions."]
                                      ["-D" "--all-directories" "Return captures from all directories."]
-                                     ["-p" "--previous" "Retrieve the most previous capture"]
-                                     ["-l" "--list" "List recent captures"]
+                                     ["-p" "--previous" "Retrieve the most previous capture" :default true]
                                      ["-c" "--id ID" "Retrieve capture by id"]
                                      ["-I" "--interactive" "Interactively select capture"]
-                                     [nil "--list-raw" "List recent captures, 1 per line"]
-                                     ["-n" "--limit LIMIT" "Number of captures or lines to list" :default 10]]
-                       ; :validate-fn (fn find-errors
-                       ;                [parsed]
-                       ;                (let [{{:keys [previous list]} :options} parsed]
-                       ;                  (cond
-                       ;                    (and (not previous) (not list))
-                       ;                    {:exit 1
-                       ;                     :message "Must chose --list or --previous"})))
-                       :usage "Retrieve captures."}}})
+                                     ["-n" "--limit LIMIT" "Number of lines to return" :default 100]]
+                       :usage "Retrieve a capture."}
+                 :list {:cli-options [["-h" "--help" "Show help"]
+                                      ["-S" "--all-sessions" "Return captures from all sessions."]
+                                      ["-D" "--all-directories" "Return captures from all directories."]
+                                      ["-r" "--list-raw" "List captures 1 per line"]
+                                      ["-n" "--limit LIMIT" "Number of captures to list" :default 10]]
+                        :usage "List captures."}
+                 }})
 
 (defn init
   [config _opts]
@@ -121,4 +129,5 @@
     (case (-> parsed second :command)
       :add (capture config combined-options)
       :get (get-captures config combined-options)
+      :list (list-captures config combined-options)
       :init (init config combined-options))))
