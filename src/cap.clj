@@ -78,6 +78,10 @@
                  (doric/table [:name :directory :session :ago {:name :line_count :title "Line Count"}])
                  println))))
 
+(defn print-shell-init
+  []
+  (println (format "export CAP_SESSION_ID=%s" (str (random-uuid)))))
+
 (def opts
   {:cli-options [["-h" "--help" "Show help"]
                  ["-d" "--db DB" "Database file"
@@ -90,6 +94,7 @@
           get - Retrieve a previous capture
           init - Initialize database for capture data
           list - List previous captures
+          shell-init - Print out exports to initialize the shell session.
 
           Pass '-h' to see further help on each subcommand."
    :subcommands {:add {:cli-options [["-h" "--help" "Show help"]
@@ -107,6 +112,8 @@
                                      ["-I" "--interactive" "Interactively select capture"]
                                      ["-n" "--limit LIMIT" "Number of lines to return" :default 100]]
                        :usage "Retrieve a capture."}
+                 :shell-init {:cli-options [["-h" "--help" "Show help"]]
+                        :usage "Emit shell initialization."}
                  :list {:cli-options [["-h" "--help" "Show help"]
                                       ["-S" "--all-sessions" "Return captures from all sessions."]
                                       ["-D" "--all-directories" "Return captures from all directories."]
@@ -130,4 +137,5 @@
       :add (capture config combined-options)
       :get (get-captures config combined-options)
       :list (list-captures config combined-options)
+      :shell-init (print-shell-init)
       :init (init config combined-options))))
