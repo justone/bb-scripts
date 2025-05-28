@@ -75,7 +75,7 @@
       list-raw (->> (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %))) captures)
                     (run! (comp println simple-line)))
       :else (->> (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %))) captures)
-                 (doric/table [:name :directory :session :ago])
+                 (doric/table [:name :directory :session :ago {:name :line_count :title "Line Count"}])
                  println))))
 
 (def opts

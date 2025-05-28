@@ -68,7 +68,12 @@
 (defn find-captures-query
   [{:keys [name directory session]} {:keys [limit]}]
   (cond-> {:select :*
-           :from :captures
+           :from [[:captures :c]]
+           :join [[{:select [:capture_id [[:count :id] :line_count]]
+                    :from :lines
+                    :group-by :capture_id}
+                   :l]
+                  [:= :c/id :l/capture_id]]
            :order-by [[:created_at :desc]]}
     name (helpers/where [:= :name name])
     directory (helpers/where [:= :directory directory])

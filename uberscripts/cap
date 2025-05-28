@@ -457,7 +457,12 @@
 (defn find-captures-query
   [{:keys [name directory session]} {:keys [limit]}]
   (cond-> {:select :*
-           :from :captures
+           :from [[:captures :c]]
+           :join [[{:select [:capture_id [[:count :id] :line_count]]
+                    :from :lines
+                    :group-by :capture_id}
+                   :l]
+                  [:= :c/id :l/capture_id]]
            :order-by [[:created_at :desc]]}
     name (helpers/where [:= :name name])
     directory (helpers/where [:= :directory directory])
@@ -627,7 +632,7 @@
       list-raw (->> (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %))) captures)
                     (run! (comp println simple-line)))
       :else (->> (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %))) captures)
-                 (doric/table [:name :directory :session :ago])
+                 (doric/table [:name :directory :session :ago {:name :line_count :title "Line Count"}])
                  println))))
 
 (def opts
