@@ -48,41 +48,44 @@
   (format "export CAP_SESSION_ID=%s" (random-uuid)))
 
 (defn simple-line
-  [{:keys [id name directory ago]}]
-  (format "%d: %s (in %s) %s" id name directory ago))
+  [{:keys [id name line-count directory ago]}]
+  (format "%d: %s (in %s, %d lines) %s" id name directory line-count ago))
 
 (defn interactive-picker
   [data]
-  (p/shell {:continue true :in (str/join "\n" data)} (format "fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-d:preview-page-down --bind=ctrl-u:preview-page-up --header \"Enter prints lines, CTRL-C exits\" --preview \"echo {} | cut -d: -f1 | head -1 | xargs -I %% sh -c '%s get --limit 10 -c %%'\" --bind \"enter:execute(echo {} | cut -d: -f1 | head -1 | xargs -I %% sh -c '%s get -c %%')+abort\"" self-script self-script)))
+  (:out (p/shell {:continue true :in (str/join "\n" data) :out :string} (format "fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-d:preview-page-down --bind=ctrl-u:preview-page-up --header \"Enter prints lines, CTRL-C exits\" --preview \"echo {} | cut -d: -f1 | head -1 | xargs -I %% sh -c '%s get --limit 10 -c %%'\"" self-script))))
 
 (defn get-captures
-  [config {:keys [all-sessions all-directories previous limit id interactive]}]
+  [config {:keys [all-sessions all-directories limit id interactive]}]
   (let [args (cond-> {}
                (not all-sessions) (assoc :session (current-session))
                (not all-directories) (assoc :directory (current-directory)))
-        captures (db/find-captures config args {:limit (if previous 1 limit)})]
-    (cond
-      id (run! println (map :line (db/get-lines config (db/get-capture config id) {:limit limit})))
-      interactive (interactive-picker (->> (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %))) captures)
-                    (map simple-line)))
-      previous (run! println (map :line (db/get-lines config (first captures) {:limit limit}))))))
+        capture (cond
+                  id (db/get-capture config id)
+                  interactive (let [result (interactive-picker (->> (db/find-captures config args {:limit 100})
+                                                                    (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %))))
+                                                                    (map simple-line)))]
+                                (when-some [picked (when (seq result)
+                                                     (-> (str/split result #":")
+                                                         first
+                                                         parse-long))]
+                                  (db/get-capture config picked)))
+                  :else (first (db/find-captures config args {:limit 1})))]
+    (when capture
+      (run! println (map :line (db/get-lines config capture {:limit limit}))))))
 
 (defn list-captures
-  [config {:keys [all-sessions all-directories previous limit list-raw]}]
+  [config {:keys [all-sessions all-directories limit list-raw]}]
   (let [args (cond-> {}
                (not all-sessions) (assoc :session (current-session))
                (not all-directories) (assoc :directory (current-directory)))
-        captures (db/find-captures config args {:limit (if previous 1 limit)})]
+        enriched-captures (->> (db/find-captures config args {:limit limit})
+                               (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %)))))]
     (cond
-      list-raw (->> (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %))) captures)
-                    (run! (comp println simple-line)))
-      :else (->> (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %))) captures)
-                 (doric/table [:name :directory :session :ago {:name :line_count :title "Line Count"}])
+      list-raw (run! (comp println simple-line) enriched-captures)
+      :else (->> enriched-captures
+                 (doric/table [:name :directory :session :ago {:name :line-count :title "Line Count"}])
                  println))))
-
-(defn print-shell-init
-  []
-  (println (format "export CAP_SESSION_ID=%s" (str (random-uuid)))))
 
 (def opts
   {:cli-options [["-h" "--help" "Show help"]
@@ -108,11 +111,13 @@
                  :get {:cli-options [["-h" "--help" "Show help"]
                                      ["-S" "--all-sessions" "Return captures from all sessions."]
                                      ["-D" "--all-directories" "Return captures from all directories."]
-                                     ["-p" "--previous" "Retrieve the most previous capture" :default true]
                                      ["-c" "--id ID" "Retrieve capture by id"]
                                      ["-I" "--interactive" "Interactively select capture"]
                                      ["-n" "--limit LIMIT" "Number of lines to return" :default 100]]
-                       :usage "Retrieve a capture."}
+                       :usage "Retrieve a capture.
+
+                              This will print the most recent capture by default, or a given capture
+                              by id. To interactively select a capture, use the -I flag."}
                  :shell-init {:cli-options [["-h" "--help" "Show help"]]
                         :usage "Emit shell initialization."}
                  :list {:cli-options [["-h" "--help" "Show help"]
@@ -143,5 +148,5 @@
       :add (capture config combined-options)
       :get (get-captures config combined-options)
       :list (list-captures config combined-options)
-      :shell-init (print-shell-init)
+      :shell-init (println (shell-init-str))
       :init (init config combined-options))))

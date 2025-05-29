@@ -1,6 +1,7 @@
 (ns cap.db
   (:require [babashka.pods :as pods]
             [cheshire.core :as json]
+            [clojure.set :as cs]
             [clojure.string :as str]
             #?@(:bb []
                 :clj [[honey.sql :as sql]
@@ -95,7 +96,8 @@
   (-> db-capture
       (update :attributes json/parse-string true)
       (dissoc :created_at)
-      (assoc :created-at (parse-sqlite-date created_at))))
+      (assoc :created-at (parse-sqlite-date created_at))
+      (cs/rename-keys {:line_count :line-count})))
 
 (defn find-captures
   [{:db/keys [location]} args opts]
