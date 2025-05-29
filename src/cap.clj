@@ -1,8 +1,10 @@
 (ns cap
   (:require [cap.db :as db]
             [cap.multi :as multi]
+            [cap.xdg :as xdg]
             [doric.org]
             [doric.core :as doric]
+            [babashka.fs :as fs]
             [babashka.process :as p]
             [clojure.string :as str]
             [clojure.pprint :refer [pprint]])
@@ -84,8 +86,7 @@
 
 (def opts
   {:cli-options [["-h" "--help" "Show help"]
-                 ["-d" "--db DB" "Database file"
-                  :default "cap.db"]]
+                 ["-d" "--db DB" "Database file"]]
    :usage "Capture and retrieve output in the shell.
 
           Available subcommands:
@@ -130,7 +131,12 @@
 (defn -main [& _args]
   (let [parsed (multi/entry opts)
         combined-options (apply merge (map :options parsed))
-        config {:db/location (-> parsed first :options :db)}]
+        {:xdg/keys [data-home]} (xdg/dirs (System/getenv))
+        db-location (or (-> parsed first :options :db)
+                        (str (fs/path data-home "cap/captures.db")))
+        config {:db/location db-location}]
+    (when-not (fs/exists? db-location)
+      (->> db-location fs/parent fs/create-dirs))
     ; (pprint parsed)
     ; (pprint config)
     (case (-> parsed second :command)
