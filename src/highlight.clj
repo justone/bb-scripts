@@ -11,6 +11,7 @@
     :default-desc ""
     :default true]
    [nil "--light" "Use light mode."]
+   [nil "--colors COLORS" "Specify the color used for highlighting. Specify a single color to map all matches to a single color."]
    ["-o" "--offset OFFSET" "Specify the color offset. (default: 0)"
     :default 0
     :default-desc ""
@@ -92,7 +93,7 @@
 (defn parsed->color-opts
   [{:keys [options arguments]}]
   (let [regex (some-> arguments first re-pattern)
-        {:keys [dark light offset randomize-offset reverse explicit]} options]
+        {:keys [dark light colors offset randomize-offset reverse explicit]} options]
     [regex
      {:reverse? reverse
       :explicit (->> (map parse-explicit explicit)
@@ -104,6 +105,9 @@
                 randomize-offset (rand-int 256)
                 :else offset)
       :colors (cond
+                colors (->> (string/split colors #",")
+                            (map parse-long)
+                            (filter some?))
                 light highlight/colors-for-light
                 dark highlight/colors-for-dark)}]))
 

@@ -48,6 +48,13 @@
          (args->color-opts-stringify-regex "--light foo")))
 
   (is (= ["foo"
+          {:colors [2 3 4]
+           :explicit {}
+           :offset 0
+           :reverse? false}]
+         (args->color-opts-stringify-regex "--colors 2,3,4 foo")))
+
+  (is (= ["foo"
           {:colors highlight/colors-for-dark
            :explicit {}
            :offset 123
