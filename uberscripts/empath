@@ -506,7 +506,8 @@
             subcommand (-> arguments first keyword)]
         (cond
           (nil? subcommand)
-          {:exit 1}
+          {:exit 1
+           :message global-usage}
 
           (not (contains? subcommands subcommand))
           {:message (str "Invalid subcommand: " (name subcommand))
