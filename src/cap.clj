@@ -93,6 +93,7 @@
                                (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %)))))]
     (cond
       list-raw (run! (comp println simple-line) enriched-captures)
+      (empty? enriched-captures) (println "No captures.")
       :else (->> enriched-captures
                  (doric/table [{:name :id, :align :right}
                                :name
@@ -172,7 +173,7 @@
                         (str (fs/path data-home "cap/captures.db")))
         config {:db/location db-location}]
     (when-not (fs/exists? db-location)
-      (->> db-location fs/parent fs/create-dirs))
+      (some->> db-location fs/parent fs/create-dirs))
     ; (pprint parsed)
     ; (pprint config)
     (case (-> parsed second :command)
