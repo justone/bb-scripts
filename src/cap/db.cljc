@@ -36,10 +36,9 @@
     (when-not (has-table? location "lines")
       (println "Adding lines table")
       (sqlite/query location ["create table lines (id integer primary key, capture_id integer, line text)"]))
-    ; (when-not (str/includes? (:sql (table-info location "captures")) "created_at")
-    ;   (println "Adding column created_at to captures")
-    ;   (sqlite/query location ["alter table captures add column created_at text default datetime('now')"])
-    ;   (sqlite/execute! location ["update captures set created_at = datetime('now')"]))
+    (when-not (str/includes? (:sql (table-info location "captures")) "comment")
+      (println "Adding column comment to captures")
+      (sqlite/query location ["alter table captures add column comment text"]))
     ))
 
 (defn add-capture-query
@@ -116,6 +115,18 @@
        (mapv decode-captures)
        first))
 
+(defn set-comment-query
+  [id comment]
+  (sql/format {:update :captures
+               :set {:comment comment}
+               :where [:= :id id]}))
+
+(defn set-comment
+  [{:db/keys [location]} capture comment]
+  (sqlite/execute! location (set-comment-query (:id capture) comment)))
+
+(set-comment-query 2 "foobar")
+
 (defn find-lines-query
   [id {:keys [limit]}]
   (cond-> {:select :*
@@ -167,4 +178,3 @@
 
   (sqlite/execute! "foo.db" ["create table foo (bar)"])
   )
-

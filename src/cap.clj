@@ -55,24 +55,34 @@
   [data]
   (:out (p/shell {:continue true :in (str/join "\n" data) :out :string} (format "fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-d:preview-page-down --bind=ctrl-u:preview-page-up --header \"Enter prints lines, CTRL-C exits\" --preview \"echo {} | cut -d: -f1 | head -1 | xargs -I %% sh -c '%s get --limit 10 -c %%'\"" self-script))))
 
-(defn get-captures
-  [config {:keys [all-sessions all-directories limit id interactive]}]
+(defn- find-capture
+  [config {:keys [all-sessions all-directories id interactive]}]
   (let [args (cond-> {}
                (not all-sessions) (assoc :session (current-session))
-               (not all-directories) (assoc :directory (current-directory)))
-        capture (cond
-                  id (db/get-capture config id)
-                  interactive (let [result (interactive-picker (->> (db/find-captures config args {:limit 100})
-                                                                    (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %))))
-                                                                    (map simple-line)))]
-                                (when-some [picked (when (seq result)
-                                                     (-> (str/split result #":")
-                                                         first
-                                                         parse-long))]
-                                  (db/get-capture config picked)))
-                  :else (first (db/find-captures config args {:limit 1})))]
+               (not all-directories) (assoc :directory (current-directory)))]
+    (cond
+      id (db/get-capture config id)
+      interactive (let [result (interactive-picker (->> (db/find-captures config args {:limit 100})
+                                                        (map #(assoc % :ago (calculate-ago (ZonedDateTime/now) (:created-at %))))
+                                                        (map simple-line)))]
+                    (when-some [picked (when (seq result)
+                                         (-> (str/split result #":")
+                                             first
+                                             parse-long))]
+                      (db/get-capture config picked)))
+      :else (first (db/find-captures config args {:limit 1})))))
+
+(defn get-captures
+  [config {:keys [limit] :as opts}]
+  (let [capture (find-capture config opts)]
+   (when capture
+    (run! println (map :line (db/get-lines config capture {:limit limit}))))))
+
+(defn set-comment
+  [config opts comment]
+  (let [capture (find-capture config opts)]
     (when capture
-      (run! println (map :line (db/get-lines config capture {:limit limit}))))))
+      (db/set-comment config capture comment))))
 
 (defn list-captures
   [config {:keys [all-sessions all-directories limit list-raw]}]
@@ -84,7 +94,13 @@
     (cond
       list-raw (run! (comp println simple-line) enriched-captures)
       :else (->> enriched-captures
-                 (doric/table [:name :directory :session :ago {:name :line-count :title "Line Count"}])
+                 (doric/table [{:name :id, :align :right}
+                               :name
+                               :directory
+                               :session
+                               :ago
+                               {:name :line-count, :title "Lines", :align :right}
+                               :comment])
                  println))))
 
 (def opts
@@ -95,6 +111,7 @@
           Available subcommands:
 
           add - Add a new capture
+          comment - Add comment to an existing capture
           get - Retrieve a previous capture
           init - Initialize database for capture data
           list - List previous captures
@@ -118,6 +135,20 @@
 
                               This will print the most recent capture by default, or a given capture
                               by id. To interactively select a capture, use the -I flag."}
+                 :comment {:cli-options [["-h" "--help" "Show help"]
+                                         ["-S" "--all-sessions" "Return captures from all sessions."]
+                                         ["-D" "--all-directories" "Return captures from all directories."]
+                                         ["-c" "--id ID" "Retrieve capture by id"]
+                                         ["-I" "--interactive" "Interactively select capture"]]
+                           :validate-fn (fn [{:keys [arguments]}]
+                                          (when-not (seq arguments)
+                                            {:exit 1
+                                             :message "Error: pass comment as first argument."}))
+                           :extra-usage-args "[comment]"
+                           :usage "Add comment on a capture.
+
+                                  This will operate on the most recent capture by default, or a given
+                                  capture by id. To interactively select a capture, use the -I flag."}
                  :shell-init {:cli-options [["-h" "--help" "Show help"]]
                         :usage "Emit shell initialization."}
                  :list {:cli-options [["-h" "--help" "Show help"]
@@ -147,6 +178,7 @@
     (case (-> parsed second :command)
       :add (capture config combined-options)
       :get (get-captures config combined-options)
+      :comment (set-comment config combined-options (-> parsed second :arguments first))
       :list (list-captures config combined-options)
       :shell-init (println (shell-init-str))
       :init (init config combined-options))))

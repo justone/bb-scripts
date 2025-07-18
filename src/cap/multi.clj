@@ -34,7 +34,7 @@
      (or (some-> (or (find-errors (or usage "") parsed subcommands)
                      (and validate-fn
                           (validate-fn parsed)))
-                 (opts/format-help script-name parsed)
+                 (opts/format-help script-name parsed opts)
                  (opts/print-and-exit))
          (if subcommandopts
            (entry (assoc subcommandopts :script-name (format "%s %s" script-name subcommand)) subargs subcommandkey (conj result parsed))
