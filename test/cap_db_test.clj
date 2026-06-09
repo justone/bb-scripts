@@ -144,7 +144,7 @@
       (doseq [query queries]
         (let [[sql & params] query]
           (is (not (str/includes? sql "DROP TABLE"))
-              "Dangerous SQL should not appear in generated query string")))))
+              "Dangerous SQL should not appear in generated query string"))))))
 
 ;; ============================================================================
 ;; LEVEL 2: IMPURE FUNCTION TESTS (Database Integration)
@@ -158,12 +158,14 @@
   "Clojure test fixture that provides a fresh database for each test"
   [test-fn]
   (let [temp-file (str (fs/create-temp-file {:suffix ".db"}))
-        config {:db/location temp-file}]
+        conn (db/connect temp-file)
+        config {:db/location temp-file :db/conn conn}]
     (db/init config)
     (binding [*test-db-config* config]
       (try
         (test-fn)
         (finally
+          (db/close conn)
           (fs/delete temp-file))))))
 
 (use-fixtures :each db-fixture)
@@ -175,8 +177,8 @@
 (deftest init-test
   (testing "database initialization creates required tables"
     ;; Tables should already be created by db-fixture
-    (is (db/has-table? (:db/location *test-db-config*) "captures"))
-    (is (db/has-table? (:db/location *test-db-config*) "lines"))))
+    (is (db/has-table? (:db/conn *test-db-config*) "captures"))
+    (is (db/has-table? (:db/conn *test-db-config*) "lines"))))
 
 (deftest add-capture-integration-test
   (testing "add-capture creates record and returns ID"
@@ -225,12 +227,14 @@
           (is (= 3 (:line-count found-capture)))
           (is (instance? ZonedDateTime (:created-at found-capture)))
           (is (map? (:attributes found-capture)))
-          (is (= "value" (get-in found-capture [:attributes :key]))))))
+          (is (= "value" (get-in found-capture [:attributes :key])))))))
 
   (testing "find-captures filters by session"
     ;; Create captures in different sessions
-    (db/add-capture *test-db-config* "capture1" "/path" "session-a" {})
-    (db/add-capture *test-db-config* "capture2" "/path" "session-b" {})
+    (let [capture-a (db/add-capture *test-db-config* "capture1" "/path" "session-a" {})
+          capture-b (db/add-capture *test-db-config* "capture2" "/path" "session-b" {})]
+      (db/add-line *test-db-config* capture-a "line 1")
+      (db/add-line *test-db-config* capture-b "line 1"))
 
     (let [session-a-results (db/find-captures *test-db-config* {:session "session-a"} {})
           session-b-results (db/find-captures *test-db-config* {:session "session-b"} {})]
@@ -240,8 +244,10 @@
       (is (= "capture2" (:name (first session-b-results))))))
 
   (testing "find-captures filters by directory"
-    (db/add-capture *test-db-config* "capture1" "/path/a" "sess" {})
-    (db/add-capture *test-db-config* "capture2" "/path/b" "sess" {})
+    (let [capture-a (db/add-capture *test-db-config* "capture1" "/path/a" "sess" {})
+          capture-b (db/add-capture *test-db-config* "capture2" "/path/b" "sess" {})]
+      (db/add-line *test-db-config* capture-a "line 1")
+      (db/add-line *test-db-config* capture-b "line 1"))
 
     (let [results (db/find-captures *test-db-config* {:directory "/path/a"} {})]
       (is (= 1 (count results)))
@@ -254,7 +260,7 @@
         (db/add-line *test-db-config* capture "dummy line"))) ; Need line for JOIN
 
     (let [limited-results (db/find-captures *test-db-config* {} {:limit 2})]
-      (is (= 2 (count limited-results)))))))
+      (is (= 2 (count limited-results))))))
 
 (deftest get-capture-integration-test
   (testing "get-capture returns specific capture by id"
@@ -313,7 +319,7 @@
   (testing "get-lines returns empty for capture with no lines"
     (let [capture (db/add-capture *test-db-config* "test" "/path" "sess" {})
           lines (db/get-lines *test-db-config* capture {})]
-      (is (empty? lines))))))
+      (is (empty? lines)))))
 
 ;; ============================================================================
 ;; Data Transformation Tests
@@ -368,8 +374,8 @@
   (testing "init is idempotent - can be called multiple times safely"
     ;; Call init again on existing database
     (db/init *test-db-config*)
-    (is (db/has-table? (:db/location *test-db-config*) "captures"))
-    (is (db/has-table? (:db/location *test-db-config*) "lines"))
+    (is (db/has-table? (:db/conn *test-db-config*) "captures"))
+    (is (db/has-table? (:db/conn *test-db-config*) "lines"))
 
     ;; Should still be able to create captures
     (let [capture (db/add-capture *test-db-config* "test" "/path" "sess" {})]

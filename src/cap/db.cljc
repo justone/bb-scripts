@@ -9,7 +9,7 @@
   (:import (java.time LocalDateTime ZonedDateTime ZoneId)
            (java.time.format DateTimeFormatter)))
 
-(pods/load-pod 'org.babashka/go-sqlite3 "0.2.7")
+(pods/load-pod 'org.babashka/go-sqlite3 "0.3.13")
 (require '[pod.babashka.go-sqlite3 :as sqlite])
 
 #?(:bb (do (require '[babashka.deps :as deps])
@@ -28,17 +28,17 @@
 (defn init
   "Update database to the latest version, creating it if it doesn't exist."
   [config]
-  (let [{:db/keys [location]} config]
-    (sqlite/query location ["PRAGMA journal_mode=WAL"])
-    (when-not (has-table? location "captures")
-      (println "Adding captures table")
-      (sqlite/query location ["create table captures (id integer primary key, name text, directory text, session text, attributes text, created_at text default current_timestamp)"]))
-    (when-not (has-table? location "lines")
-      (println "Adding lines table")
-      (sqlite/query location ["create table lines (id integer primary key, capture_id integer, line text)"]))
-    (when-not (str/includes? (:sql (table-info location "captures")) "comment")
-      (println "Adding column comment to captures")
-      (sqlite/query location ["alter table captures add column comment text"]))
+  (let [{:db/keys [conn]} config]
+    (sqlite/query conn ["PRAGMA journal_mode=WAL"])
+    (when-not (has-table? conn "captures")
+      ;; (println "Adding captures table")
+      (sqlite/query conn ["create table captures (id integer primary key, name text, directory text, session text, attributes text, created_at text default current_timestamp)"]))
+    (when-not (has-table? conn "lines")
+      ;; (println "Adding lines table")
+      (sqlite/query conn ["create table lines (id integer primary key, capture_id integer, line text)"]))
+    (when-not (str/includes? (:sql (table-info conn "captures")) "comment")
+      ;; (println "Adding column comment to captures")
+      (sqlite/query conn ["alter table captures add column comment text"]))
     ))
 
 (defn add-capture-query
@@ -49,8 +49,8 @@
      :values [[name directory session (json/generate-string attributes)]]}))
 
 (defn add-capture
-  [{:db/keys [location]} name directory session attributes]
-  (let [{:keys [last-inserted-id]} (sqlite/execute! location (add-capture-query name directory session attributes))]
+  [{:db/keys [conn]} name directory session attributes]
+  (let [{:keys [last-inserted-id]} (sqlite/execute! conn (add-capture-query name directory session attributes))]
     {:id last-inserted-id}))
 
 (defn add-line-query
@@ -61,8 +61,8 @@
      :values [[capture-id line]]}))
 
 (defn add-line
-  [{:db/keys [location]} capture line]
-  (let [{:keys [last-inserted-id]} (sqlite/execute! location (add-line-query (:id capture) line))]
+  [{:db/keys [conn]} capture line]
+  (let [{:keys [last-inserted-id]} (sqlite/execute! conn (add-line-query (:id capture) line))]
     {:id last-inserted-id}))
 
 (defn find-captures-query
@@ -99,8 +99,8 @@
       (cs/rename-keys {:line_count :line-count})))
 
 (defn find-captures
-  [{:db/keys [location]} args opts]
-  (->> (sqlite/query location (find-captures-query args opts))
+  [{:db/keys [conn]} args opts]
+  (->> (sqlite/query conn (find-captures-query args opts))
        (mapv decode-captures)))
 
 (defn get-capture-query
@@ -110,8 +110,8 @@
                :where [:= :id id]}))
 
 (defn get-capture
-  [{:db/keys [location]} id]
-  (->> (sqlite/query location (get-capture-query id))
+  [{:db/keys [conn]} id]
+  (->> (sqlite/query conn (get-capture-query id))
        (mapv decode-captures)
        first))
 
@@ -122,8 +122,8 @@
                :where [:= :id id]}))
 
 (defn set-comment
-  [{:db/keys [location]} capture comment]
-  (sqlite/execute! location (set-comment-query (:id capture) comment)))
+  [{:db/keys [conn]} capture comment]
+  (sqlite/execute! conn (set-comment-query (:id capture) comment)))
 
 (set-comment-query 2 "foobar")
 
@@ -132,17 +132,25 @@
   (cond-> {:select :*
            :from :lines
            :where [:= :capture_id id]
-           :order-by [:id]}
+           :order-by [[:id :desc]]}
     limit (helpers/limit limit)
     :finally (sql/format)))
 
 (defn get-lines
-  [{:db/keys [location]} capture opts]
-  (->> (sqlite/query location (find-lines-query (:id capture) opts))
+  [{:db/keys [conn]} capture opts]
+  (->> (sqlite/query conn (find-lines-query (:id capture) opts))
        ; (mapv decode-lines)
        ))
 
+(defn connect
+  [location]
+  ;; (prn :connect)
+  (sqlite/get-connection location))
 
+(defn close
+  [conn]
+  ;; (prn :close)
+  (sqlite/close-connection conn))
 
 (comment
   (sqlite/execute! "foo.db" ["create table foo (bar)"])
@@ -171,10 +179,15 @@
   (find-lines-query 2 nil)
   (get-lines {:db/location "cap.db"} {:id 2} nil)
 
+  (find-lines-query 2 {:limit 10})
+
   (get-capture-query 14)
   (get-capture {:db/location "cap.db"} "14")
 
   (table-info "cap.db" "captures")
 
   (sqlite/execute! "foo.db" ["create table foo (bar)"])
+
+  (def c (sqlite/get-connection "foo.db"))
+  (sqlite/execute! c ["insert into foo (bar) values ('new')"])
   )

@@ -168,18 +168,21 @@
 (defn -main [& _args]
   (let [parsed (multi/entry opts)
         combined-options (apply merge (map :options parsed))
-        {:xdg/keys [data-home]} (xdg/dirs (System/getenv))
         db-location (or (-> parsed first :options :db)
-                        (str (fs/path data-home "cap/captures.db")))
-        config {:db/location db-location}]
+                        (str (fs/xdg-data-home "cap/captures.db")))
+        conn (db/connect db-location)
+        config {:db/location db-location :db/conn conn}]
     (when-not (fs/exists? db-location)
       (some->> db-location fs/parent fs/create-dirs))
     ; (pprint parsed)
     ; (pprint config)
-    (case (-> parsed second :command)
-      :add (capture config combined-options)
-      :get (get-captures config combined-options)
-      :comment (set-comment config combined-options (-> parsed second :arguments first))
-      :list (list-captures config combined-options)
-      :shell-init (println (shell-init-str))
-      :init (init config combined-options))))
+    (try
+      (case (-> parsed second :command)
+        :add (capture config combined-options)
+        :get (get-captures config combined-options)
+        :comment (set-comment config combined-options (-> parsed second :arguments first))
+        :list (list-captures config combined-options)
+        :shell-init (println (shell-init-str))
+        :init (init config combined-options))
+      (finally
+        (db/close conn)))))
